@@ -2,7 +2,8 @@
 
 namespace BikeShop.Models;
 
-public class Bike {
+public class Bike
+{
     [Key]
     public int Id { get; set; }
 
