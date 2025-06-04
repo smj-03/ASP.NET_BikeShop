@@ -1,8 +1,10 @@
 using BikeShop.Data;
+using BikeShop.Mappers;
 using BikeShop.Models;
 using BikeShop.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+
+// Mozna niby zrobic to po przez dependency injection, ale paczka nie działa poprawnie 
+builder.Services.AddScoped<UserMapper>();
+
 
 var app = builder.Build();
 

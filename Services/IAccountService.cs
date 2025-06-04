@@ -10,6 +10,6 @@ namespace BikeShop.Services
         Task<IdentityResult> RegisterAsync(RegisterViewModel model);
         Task<SignInResult> LoginAsync(LoginViewModel model);
         Task LogoutAsync();
-        List<ApplicationUser> GetAllUsers();
+        List<UserDto> GetAllUsers();
     }
 }

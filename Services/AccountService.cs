@@ -1,32 +1,29 @@
-﻿using BikeShop.Models;
+﻿using BikeShop.Mappers;
+using BikeShop.Models;
 using Microsoft.AspNetCore.Identity;
-
 namespace BikeShop.Services;
 
 public class AccountService : IAccountService
 {
     private readonly UserManager<ApplicationUser> userManager;
     private readonly SignInManager<ApplicationUser> signInManager;
+    private readonly UserMapper userMapper;
 
-    public AccountService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public AccountService(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        UserMapper userMapper)
     {
         this.userManager = userManager;
         this.signInManager = signInManager;
+        this.userMapper = userMapper;
     }
 
     public async Task<IdentityResult> RegisterAsync(RegisterViewModel model)
     {
-        var user = new ApplicationUser
-        {
-            UserName = model.Email,
-            Email = model.Email,
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            PhoneNumber = model.PhoneNumber
-        };
-
+        var user = userMapper.Map(model);
         var result = await userManager.CreateAsync(user, model.Password);
-        
+
         if (result.Succeeded)
         {
             await signInManager.SignInAsync(user, isPersistent: false);
@@ -49,8 +46,8 @@ public class AccountService : IAccountService
         await signInManager.SignOutAsync();
     }
 
-    public List<ApplicationUser> GetAllUsers()
+    public List<UserDto> GetAllUsers()
     {
-        return userManager.Users.ToList();
+        return userManager.Users.Select(u => userMapper.Map(u)).ToList();
     }
 }
