@@ -1,0 +1,25 @@
+﻿@model IEnumerable<BikeShop.Models.ApplicationUser>
+
+
+<h2>Lista Użytkowników</h2>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Email</th>
+        <th>Imię</th>
+        <th>Nazwisko</th>
+        <th>Numer telefonu</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>@user.FirstName</td>
+            <td>@user.LastName</td>
+            <td>@user.PhoneNumber</td>
+        </tr>
+    }
+    </tbody>
+</table>
