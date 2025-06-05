@@ -1,9 +1,16 @@
 ﻿using BikeShop.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BikeShop.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options): DbContext(options)
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
+    {
+    }
+
     public DbSet<Bike> Bikes { get; set; }
 }
