@@ -21,9 +21,18 @@ public class AccountService : IAccountService
         _userManager = userManager;
     }
 
+    public async Task<IdentityResult> AssignRoleAsync(string userId, string roleName)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found" });
+
+        // Tu możesz dodać walidację, że tylko Admin może wywołać tę metodę (np. w kontrolerze przez [Authorize(Roles = "Admin")])
+        return await userManager.AddToRoleAsync(user, roleName);
+    }
     public async Task<IdentityResult> RegisterAsync(RegisterViewModel model)
     {
         var user = userMapper.Map(model);
+        user.UserName = model.Email; // Ustawienie UserName jako Email
         var result = await userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
@@ -52,5 +61,21 @@ public class AccountService : IAccountService
     public List<UserDto> GetAllUsers()
     {
         return userManager.Users.Select(u => userMapper.Map(u)).ToList();
+    }
+    
+    public async Task<List<UserDto>> GetAllUsersAsync()
+    {
+        var users = userManager.Users.ToList();
+        var userDtos = new List<UserDto>();
+
+        foreach (var user in users)
+        {
+            var dto = userMapper.Map(user);
+            var roles = await userManager.GetRolesAsync(user);
+            dto.Role = roles.FirstOrDefault() ?? "No role";  // zakładam, że tylko jedna rola na użytkownika
+            userDtos.Add(dto);
+        }
+
+        return userDtos;
     }
 }
