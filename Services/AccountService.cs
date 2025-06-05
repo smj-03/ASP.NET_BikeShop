@@ -8,6 +8,7 @@ public class AccountService : IAccountService
     private readonly UserManager<ApplicationUser> userManager;
     private readonly SignInManager<ApplicationUser> signInManager;
     private readonly UserMapper userMapper;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public AccountService(
         UserManager<ApplicationUser> userManager,
@@ -17,6 +18,7 @@ public class AccountService : IAccountService
         this.userManager = userManager;
         this.signInManager = signInManager;
         this.userMapper = userMapper;
+        _userManager = userManager;
     }
 
     public async Task<IdentityResult> RegisterAsync(RegisterViewModel model)
@@ -26,6 +28,7 @@ public class AccountService : IAccountService
 
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "Client");
             await signInManager.SignInAsync(user, isPersistent: false);
         }
 
