@@ -7,5 +7,6 @@ namespace BikeShop.Mappers;
 public partial class UserMapper
 {
     public partial ApplicationUser Map(RegisterViewModel source);
+
     public partial UserDto Map(ApplicationUser source);
 }

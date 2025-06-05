@@ -5,7 +5,6 @@ using BikeShop.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,9 +19,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 
-// Mozna niby zrobic to po przez dependency injection, ale paczka nie działa poprawnie 
+// Mozna niby zrobic to po przez dependency injection, ale paczka nie działa poprawnie
 builder.Services.AddScoped<UserMapper>();
-
 
 var app = builder.Build();
 
@@ -52,7 +50,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
+        pattern: "{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
 
 app.Run();

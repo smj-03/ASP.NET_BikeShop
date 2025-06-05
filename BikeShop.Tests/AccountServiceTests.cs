@@ -18,7 +18,7 @@ public class AccountServiceTests
         var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
 
         var userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            userStoreMock.Object, 
+            userStoreMock.Object,
             null, null, null, null, null, null, null, null);
 
         var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -38,7 +38,7 @@ public class AccountServiceTests
         var registerViewModel = new RegisterViewModel
         {
             Email = "test@example.com",
-            Password = "Password123!"
+            Password = "Password123!",
         };
 
         // Mockowanie tworzenia użytkownika na sukces

@@ -1,17 +1,17 @@
-﻿using BikeShop.Mappers;
-using BikeShop.Models;
-using Xunit;
-
-namespace BikeShop.Tests.Mappers
+﻿namespace BikeShop.Tests.Mappers
 {
+    using BikeShop.Mappers;
+    using BikeShop.Models;
+    using Xunit;
+
     public class UserMapperTests
     {
-        private readonly UserMapper _mapper;
+        private readonly UserMapper mapper;
 
         // Konstruktor działa jak [SetUp] w NUnit
         public UserMapperTests()
         {
-            _mapper = new UserMapper();
+            this.mapper = new UserMapper();
         }
 
         [Fact]
@@ -24,11 +24,11 @@ namespace BikeShop.Tests.Mappers
                 FirstName = "Jan",
                 LastName = "Kowalski",
                 PhoneNumber = "123456789",
-                Password = "Haslo123!"
+                Password = "Haslo123!",
             };
 
             // Act
-            var user = _mapper.Map(model);
+            var user = this.mapper.Map(model);
 
             // Assert
             Assert.Equal(model.Email, user.Email);
@@ -46,11 +46,11 @@ namespace BikeShop.Tests.Mappers
                 Email = "test@example.com",
                 FirstName = "Jan",
                 LastName = "Kowalski",
-                PhoneNumber = "123456789"
+                PhoneNumber = "123456789",
             };
 
             // Act
-            var dto = _mapper.Map(user);
+            var dto = this.mapper.Map(user);
 
             // Assert
             Assert.Equal(user.Email, dto.Email);

@@ -6,59 +6,78 @@ using Microsoft.AspNetCore.Mvc;
 public class AccountController : Controller
 {
     private readonly IAccountService accountService;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public AccountController(IAccountService accountService)
+    public AccountController(IAccountService accountService, UserManager<ApplicationUser> userManager)
     {
         this.accountService = accountService;
+        this.userManager = userManager;
     }
 
     [HttpGet]
     public IActionResult Register()
     {
-        return View();
+        return this.View();
     }
 
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (ModelState.IsValid)
+        if (this.ModelState.IsValid)
         {
-            var result = await accountService.RegisterAsync(model);
+            var result = await this.accountService.RegisterAsync(model);
             if (result.Succeeded)
-                return RedirectToAction("Index", "Home");
+            {
+                return this.RedirectToAction("Index", "Home");
+            }
 
             foreach (var error in result.Errors)
-                ModelState.AddModelError(string.Empty, error.Description);
+            {
+                this.ModelState.AddModelError(string.Empty, error.Description);
+            }
         }
 
-        return View(model);
+        return this.View(model);
     }
 
     [HttpGet]
     public IActionResult Login()
     {
-        return View();
+        return this.View();
     }
 
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (ModelState.IsValid)
+        if (this.ModelState.IsValid)
         {
-            var result = await accountService.LoginAsync(model);
+            var result = await this.accountService.LoginAsync(model);
             if (result.Succeeded)
-                return RedirectToAction("ListUsers");
+            {
+                var user = await this.userManager.FindByEmailAsync(model.Email);
+                if (user != null && await this.userManager.IsInRoleAsync(user, "Client"))
+                {
+                    return this.RedirectToAction("Index", "Home");
+                }
 
-            ModelState.AddModelError(string.Empty, "Nieprawidłowe dane logowania.");
+                if (user != null && await this.userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return this.RedirectToAction("ManageRoles", "Admin");
+                }
+
+                return this.RedirectToAction("ListUsers");
+            }
+
+            this.ModelState.AddModelError(string.Empty, "Nieprawidłowe dane logowania.");
         }
 
-        return View(model);
+        return this.View(model);
     }
 
     [HttpGet]
     public IActionResult ListUsers()
     {
-        var users = accountService.GetAllUsers();
-        return View(users);
+        var users = this.accountService.GetAllUsers();
+        return this.View(users);
     }
 }

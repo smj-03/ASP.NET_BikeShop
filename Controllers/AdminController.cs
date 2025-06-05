@@ -10,39 +10,42 @@ namespace BikeShop.Controllers;
 [Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly UserMapper _userMapper;
+    private readonly UserManager<ApplicationUser> userManager;
+    private readonly UserMapper userMapper;
 
     public AdminController(UserManager<ApplicationUser> userManager, UserMapper userMapper)
     {
-        _userManager = userManager;
-        _userMapper = userMapper;
+        this.userManager = userManager;
+        this.userMapper = userMapper;
     }
 
     public async Task<IActionResult> ManageRoles()
     {
-        var users = _userManager.Users.ToList();
+        var users = this.userManager.Users.ToList();
         var userDtos = new List<UserDto>();
 
         foreach (var user in users)
         {
-            var dto = _userMapper.Map(user);
-            dto.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(); // dodanie roli
+            var dto = this.userMapper.Map(user);
+            dto.Role = (await this.userManager.GetRolesAsync(user)).FirstOrDefault(); // dodanie roli
             userDtos.Add(dto);
         }
 
-        return View(userDtos);
+        return this.View(userDtos);
     }
+
     public async Task<IActionResult> ChangeRole(string email, string newRole)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await this.userManager.FindByEmailAsync(email);
         if (user == null)
-            return RedirectToAction("ManageRoles");
+        {
+            return this.RedirectToAction("ManageRoles");
+        }
 
-        var oldRoles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, oldRoles);
+        var oldRoles = await this.userManager.GetRolesAsync(user);
+        await this.userManager.RemoveFromRolesAsync(user, oldRoles);
 
-        var result = await _userManager.AddToRoleAsync(user, newRole);
-        return RedirectToAction("ManageRoles");
+        var result = await this.userManager.AddToRoleAsync(user, newRole);
+        return this.RedirectToAction("ManageRoles");
     }
 }
