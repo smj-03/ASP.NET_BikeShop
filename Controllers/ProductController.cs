@@ -89,4 +89,14 @@ public class ProductsController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpGet("filter")]
+    public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var products = await _productService.GetFilteredAsync(filterDto);
+        return Ok(products);
+    }
 }

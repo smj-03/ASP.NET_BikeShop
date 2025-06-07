@@ -55,4 +55,26 @@ public class ProductService : IProductService
         await _context.SaveChangesAsync();
         return true;
     }
+    public async Task<IEnumerable<ProductDto>> GetFilteredAsync(ProductFilterDto filter)
+    {
+        var query = _context.Products.AsQueryable();
+
+        if (filter.Categories != null && filter.Categories.Any())
+        {
+            query = query.Where(p => filter.Categories.Contains(p.Category));
+        }
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= filter.MinPrice.Value);
+        }
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+        }
+
+        var products = await query.ToListAsync();
+        return products.Select(p => _mapper.Map(p));
+    }
 }

@@ -13,13 +13,6 @@ public class HomeController : Controller
     {
         _productService = productService;
     }
-
-    public async Task<IActionResult> Index()
-    {
-        var products = await _productService.GetAllAsync();
-        return View(products);
-    }
-
     public IActionResult Privacy()
     {
         return this.View();
@@ -29,5 +22,16 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
+    }
+    [HttpGet]
+    public async Task<IActionResult> Index([FromQuery] ProductFilterDto filter)
+    {
+        var products = await _productService.GetFilteredAsync(filter);
+        var vm = new IndexViewModel
+        {
+            Filter = filter,
+            Products = products
+        };
+        return View(vm);
     }
 }
