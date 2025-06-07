@@ -1,21 +1,23 @@
 using System.Diagnostics;
 using BikeShop.Models;
+using BikeShop.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BikeShop.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    private readonly IProductService _productService;
+    
+    public HomeController(IProductService productService)
     {
-        this.logger = logger;
+        _productService = productService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return this.View();
+        var products = await _productService.GetAllAsync();
+        return View(products);
     }
 
     public IActionResult Privacy()
