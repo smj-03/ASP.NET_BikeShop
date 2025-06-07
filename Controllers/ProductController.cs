@@ -8,7 +8,6 @@ namespace BikeShop.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin,Employee")]
-[Consumes("multipart/form-data")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -37,6 +36,7 @@ public class ProductsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,Employee")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create([FromForm] ProductCreateUpdateDto dto)
     {
         var imageFile = dto.Image;
@@ -69,6 +69,7 @@ public class ProductsController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin,Employee")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(int id, [FromBody] ProductCreateUpdateDto dto)
     {
         var updated = await _productService.UpdateAsync(id, dto);
@@ -87,5 +88,15 @@ public class ProductsController : ControllerBase
             return NotFound();
 
         return NoContent();
+    }
+    
+    [HttpGet("filter")]
+    public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var products = await _productService.GetFilteredAsync(filterDto);
+        return Ok(products);
     }
 }

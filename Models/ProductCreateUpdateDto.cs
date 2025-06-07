@@ -31,5 +31,5 @@ public class ProductCreateUpdateDto
     [Required]
     public IFormFile Image { get; set; } = null!;
 
-    public string? ImageUrl { get; set; }
+    public string? ImageUrl;
 }
