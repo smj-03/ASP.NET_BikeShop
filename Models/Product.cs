@@ -26,4 +26,7 @@ public class Product
     
     [Required]
     public int StockQuantity { get; set; }
+    
+    [StringLength(500)]
+    public string? ImageUrl { get; set; }
 }
