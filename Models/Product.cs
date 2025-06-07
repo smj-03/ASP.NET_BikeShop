@@ -22,9 +22,6 @@ public class Product
     public string Category { get; set; }
     
     [Required]
-    public string ImageUrl { get; set; }
-    
-    [Required]
     public string Manufacturer { get; set; }
     
     [Required]

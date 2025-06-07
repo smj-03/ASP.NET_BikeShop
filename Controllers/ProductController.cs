@@ -8,6 +8,7 @@ namespace BikeShop.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin,Employee")]
+[Consumes("multipart/form-data")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -36,10 +37,34 @@ public class ProductsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,Employee")]
-    public async Task<IActionResult> Create([FromBody] ProductCreateUpdateDto dto)
+    public async Task<IActionResult> Create([FromForm] ProductCreateUpdateDto dto)
     {
-        var createdProduct = await _productService.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+        var imageFile = dto.Image;
+
+        // Zapisz plik do wwwroot/images
+        var fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
+        var filePath = Path.Combine("wwwroot", "images", fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await imageFile.CopyToAsync(stream);
+        }
+        
+        var imageUrl = $"/images/{fileName}";
+        
+        var productDto = new ProductCreateUpdateDto
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            StockQuantity = dto.StockQuantity,
+            Category = dto.Category,
+            Manufacturer = dto.Manufacturer,
+            ImageUrl = imageUrl
+        };
+
+        var created = await _productService.CreateAsync(productDto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id}")]

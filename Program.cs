@@ -50,7 +50,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseStaticFiles();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
