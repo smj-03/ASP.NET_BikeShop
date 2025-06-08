@@ -28,6 +28,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IUserSearchService, UserSearchService>();
 builder.Services.AddScoped<IRoleInitializer, RoleInitializer>();
 
 builder.Services.AddScoped<UserMapper>();
