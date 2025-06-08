@@ -15,81 +15,80 @@ public class OrderController : Controller
     {
         this.orderService = orderService;
     }
-    
+
     // GET: orders/create
     [HttpGet("create")]
     public IActionResult Create()
     {
         // Wyświetl formularz tworzenia zamówienia
-        return View(new CreateOrderDto());
+        return this.View(new CreateOrderDto());
     }
-    
+
     // POST: orders/create
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateOrderDto dto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Challenge();
+            return this.Challenge();
         }
 
         dto.CustomerId = userId;
 
-        if (!ModelState.IsValid)
+        if (!this.ModelState.IsValid)
         {
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return View(dto);
+            var errors = this.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return this.View(dto);
         }
 
         try
         {
-            var result = await orderService.CreateAsync(dto);
-            return RedirectToAction(nameof(Details), new { id = result.Id });
+            var result = await this.orderService.CreateAsync(dto);
+            return this.RedirectToAction(nameof(this.Details), new { id = result.Id });
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View(dto);
+            this.ModelState.AddModelError(string.Empty, ex.Message);
+            return this.View(dto);
         }
     }
-
 
     // GET: orders/details/5
     [HttpGet("details/{id}")]
     public async Task<IActionResult> Details(int id)
     {
-        var order = await orderService.GetByIdAsync(id);
+        var order = await this.orderService.GetByIdAsync(id);
         if (order == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        return View(order);
+        return this.View(order);
     }
 
     // GET: orders/editstatus/5
     [HttpGet("editstatus/{id}")]
     public async Task<IActionResult> EditStatus(int id)
     {
-        var order = await orderService.GetByIdAsync(id);
+        var order = await this.orderService.GetByIdAsync(id);
         if (order == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
         if (!Enum.TryParse<OrderStatus>(order.Status, out var statusEnum))
         {
-            return BadRequest("Niepoprawny status zamówienia.");
+            return this.BadRequest("Niepoprawny status zamówienia.");
         }
 
         var dto = new OrderStatusUpdateDto
         {
-            NewStatus = statusEnum
+            NewStatus = statusEnum,
         };
 
-        return View(dto);
+        return this.View(dto);
     }
 
     // POST: orders/editstatus/5
@@ -97,29 +96,30 @@ public class OrderController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditStatus(int id, OrderStatusUpdateDto dto)
     {
-        if (!ModelState.IsValid)
+        if (!this.ModelState.IsValid)
         {
-            return View(dto);
+            return this.View(dto);
         }
 
         try
         {
-            var success = await orderService.UpdateStatusAsync(id, dto);
+            var success = await this.orderService.UpdateStatusAsync(id, dto);
             if (!success)
             {
-                return NotFound();
+                return this.NotFound();
             }
-            return RedirectToAction(nameof(Details), new { id });
+
+            return this.RedirectToAction(nameof(this.Details), new { id });
         }
         catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View(dto);
+            this.ModelState.AddModelError(string.Empty, ex.Message);
+            return this.View(dto);
         }
         catch (ArgumentException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
-            return View(dto);
+            this.ModelState.AddModelError(string.Empty, ex.Message);
+            return this.View(dto);
         }
     }
 }

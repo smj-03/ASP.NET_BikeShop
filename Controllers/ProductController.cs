@@ -19,7 +19,7 @@ public class ProductsController : Controller
     public async Task<IActionResult> Index()
     {
         var products = await this.productService.GetAllAsync();
-        return View(products);
+        return this.View(products);
     }
 
     // GET: /Products/Details/5
@@ -27,15 +27,17 @@ public class ProductsController : Controller
     {
         var product = await this.productService.GetByIdAsync(id);
         if (product == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return View(product);
+        return this.View(product);
     }
 
     // GET: /Products/Create
     public IActionResult Create()
     {
-        return View();
+        return this.View();
     }
 
     // POST: /Products/Create
@@ -44,13 +46,15 @@ public class ProductsController : Controller
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create(ProductCreateUpdateDto dto)
     {
-        if (!ModelState.IsValid)
-            return View(dto);
+        if (!this.ModelState.IsValid)
+        {
+            return this.View(dto);
+        }
 
         if (dto.Image == null || dto.Image.Length == 0)
         {
-            ModelState.AddModelError("Image", "Image file is required.");
-            return View(dto);
+            this.ModelState.AddModelError("Image", "Image file is required.");
+            return this.View(dto);
         }
 
         // Zapis pliku
@@ -65,7 +69,7 @@ public class ProductsController : Controller
         dto.ImageUrl = $"/images/{fileName}";
 
         var created = await this.productService.CreateAsync(dto);
-        return RedirectToAction(nameof(Details), new { id = created.Id });
+        return this.RedirectToAction(nameof(this.Details), new { id = created.Id });
     }
 
     // GET: /Products/Edit/5
@@ -73,7 +77,9 @@ public class ProductsController : Controller
     {
         var product = await this.productService.GetByIdAsync(id);
         if (product == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
         // Mapujemy do DTO do edycji
         var dto = new ProductCreateUpdateDto
@@ -87,7 +93,7 @@ public class ProductsController : Controller
             ImageUrl = product.ImageUrl,
         };
 
-        return View(dto);
+        return this.View(dto);
     }
 
     // POST: /Products/Edit/5
@@ -96,8 +102,10 @@ public class ProductsController : Controller
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Edit(int id, ProductCreateUpdateDto dto)
     {
-        if (!ModelState.IsValid)
-            return View(dto);
+        if (!this.ModelState.IsValid)
+        {
+            return this.View(dto);
+        }
 
         if (dto.Image != null && dto.Image.Length > 0)
         {
@@ -112,13 +120,15 @@ public class ProductsController : Controller
 
             dto.ImageUrl = $"/images/{fileName}";
         }
-        // Jeżeli obrazek nie został zmieniony, zostaje poprzedni ImageUrl
 
+        // Jeżeli obrazek nie został zmieniony, zostaje poprzedni ImageUrl
         var updated = await this.productService.UpdateAsync(id, dto);
         if (!updated)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return RedirectToAction(nameof(Details), new { id });
+        return this.RedirectToAction(nameof(this.Details), new { id });
     }
 
     // GET: /Products/Delete/5
@@ -127,31 +137,38 @@ public class ProductsController : Controller
     {
         var product = await this.productService.GetByIdAsync(id);
         if (product == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return View(product);
+        return this.View(product);
     }
 
     // POST: /Products/Delete/5
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
+    [ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var deleted = await this.productService.DeleteAsync(id);
         if (!deleted)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return RedirectToAction(nameof(Index));
+        return this.RedirectToAction(nameof(this.Index));
     }
 
     // GET: /Products/Filter
     public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
     {
-        if (!ModelState.IsValid)
-            return View("Index", new List<ProductDto>());
+        if (!this.ModelState.IsValid)
+        {
+            return this.View("Index", new List<ProductDto>());
+        }
 
         var products = await this.productService.GetFilteredAsync(filterDto);
-        return View("Index", products);
+        return this.View("Index", products);
     }
 }

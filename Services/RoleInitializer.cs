@@ -4,11 +4,11 @@ namespace BikeShop.Services;
 
 public class RoleInitializer : IRoleInitializer
 {
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<IdentityRole> roleManager;
 
     public RoleInitializer(RoleManager<IdentityRole> roleManager)
     {
-        _roleManager = roleManager;
+        this.roleManager = roleManager;
     }
 
     public async Task EnsureRolesExistAsync()
@@ -17,9 +17,9 @@ public class RoleInitializer : IRoleInitializer
 
         foreach (var role in roles)
         {
-            if (!await _roleManager.RoleExistsAsync(role))
+            if (!await this.roleManager.RoleExistsAsync(role))
             {
-                await _roleManager.CreateAsync(new IdentityRole(role));
+                await this.roleManager.CreateAsync(new IdentityRole(role));
             }
         }
     }

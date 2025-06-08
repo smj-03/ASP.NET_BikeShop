@@ -7,40 +7,46 @@ namespace BikeShop.Services;
 
 public class UserSearchService : IUserSearchService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<ApplicationUser> userManager;
 
     public UserSearchService(UserManager<ApplicationUser> userManager)
     {
-        _userManager = userManager;
+        this.userManager = userManager;
     }
 
     public async Task<List<UserDto>> SearchUsersAsync(UserSearchDto searchDto, ClaimsPrincipal requester)
     {
-        var requesterUser = await _userManager.GetUserAsync(requester);
-        var requesterRoles = await _userManager.GetRolesAsync(requesterUser);
+        var requesterUser = await this.userManager.GetUserAsync(requester);
+        var requesterRoles = await this.userManager.GetRolesAsync(requesterUser);
 
         bool isAdmin = requesterRoles.Contains("Admin");
         bool isEmployee = requesterRoles.Contains("Employee");
 
         if (!isAdmin && !isEmployee)
+        {
             throw new UnauthorizedAccessException("Brak uprawnień.");
+        }
 
         var allowedRoles = isAdmin
             ? new[] { "Client", "Employee" }
             : new[] { "Client" };
 
-        var users = await _userManager.Users.ToListAsync();
+        var users = await this.userManager.Users.ToListAsync();
         var result = new List<UserDto>();
 
         foreach (var user in users)
         {
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await this.userManager.GetRolesAsync(user);
 
             if (!roles.Any(r => allowedRoles.Contains(r)))
+            {
                 continue;
+            }
 
             if (searchDto.Role != null && !roles.Contains(searchDto.Role))
+            {
                 continue;
+            }
 
             if (!string.IsNullOrWhiteSpace(searchDto.Query))
             {
@@ -61,7 +67,7 @@ public class UserSearchService : IUserSearchService
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
-                Role = roles.FirstOrDefault() ?? string.Empty
+                Role = roles.FirstOrDefault() ?? string.Empty,
             });
         }
 
