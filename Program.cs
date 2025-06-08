@@ -10,14 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -57,9 +54,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapRazorPages();
-app.UseSwagger();
-app.UseSwaggerUI();
 app.UseStaticFiles();
 app.MapStaticAssets();
 

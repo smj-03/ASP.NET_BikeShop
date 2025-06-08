@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BikeShop.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 [Authorize(Roles = "Admin,Employee")]
-public class ProductsController : ControllerBase
+public class ProductsController : Controller
 {
     private readonly IProductService productService;
 
@@ -17,94 +15,143 @@ public class ProductsController : ControllerBase
         this.productService = productService;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    // GET: /Products
+    public async Task<IActionResult> Index()
     {
         var products = await this.productService.GetAllAsync();
-        return this.Ok(products);
+        return View(products);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    // GET: /Products/Details/5
+    public async Task<IActionResult> Details(int id)
     {
         var product = await this.productService.GetByIdAsync(id);
         if (product == null)
-        {
-            return this.NotFound();
-        }
+            return NotFound();
 
-        return this.Ok(product);
+        return View(product);
     }
 
-    [HttpPost]
-    [Authorize(Roles = "Admin,Employee")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Create([FromForm] ProductCreateUpdateDto dto)
+    // GET: /Products/Create
+    public IActionResult Create()
     {
-        var imageFile = dto.Image;
+        return View();
+    }
 
-        // Zapisz plik do wwwroot/images
-        var fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
-        var filePath = Path.Combine("wwwroot", "images", fileName);
+    // POST: /Products/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Create(ProductCreateUpdateDto dto)
+    {
+        if (!ModelState.IsValid)
+            return View(dto);
+
+        if (dto.Image == null || dto.Image.Length == 0)
+        {
+            ModelState.AddModelError("Image", "Image file is required.");
+            return View(dto);
+        }
+
+        // Zapis pliku
+        var fileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await imageFile.CopyToAsync(stream);
+            await dto.Image.CopyToAsync(stream);
         }
 
-        var imageUrl = $"/images/{fileName}";
+        dto.ImageUrl = $"/images/{fileName}";
 
-        var productDto = new ProductCreateUpdateDto
+        var created = await this.productService.CreateAsync(dto);
+        return RedirectToAction(nameof(Details), new { id = created.Id });
+    }
+
+    // GET: /Products/Edit/5
+    public async Task<IActionResult> Edit(int id)
+    {
+        var product = await this.productService.GetByIdAsync(id);
+        if (product == null)
+            return NotFound();
+
+        // Mapujemy do DTO do edycji
+        var dto = new ProductCreateUpdateDto
         {
-            Name = dto.Name,
-            Description = dto.Description,
-            Price = dto.Price,
-            StockQuantity = dto.StockQuantity,
-            Category = dto.Category,
-            Manufacturer = dto.Manufacturer,
-            ImageUrl = imageUrl,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            StockQuantity = product.StockQuantity,
+            Category = product.Category,
+            Manufacturer = product.Manufacturer,
+            ImageUrl = product.ImageUrl,
         };
 
-        var created = await this.productService.CreateAsync(productDto);
-        return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
+        return View(dto);
     }
 
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin,Employee")]
+    // POST: /Products/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Update(int id, [FromBody] ProductCreateUpdateDto dto)
+    public async Task<IActionResult> Edit(int id, ProductCreateUpdateDto dto)
     {
+        if (!ModelState.IsValid)
+            return View(dto);
+
+        if (dto.Image != null && dto.Image.Length > 0)
+        {
+            // Nowy plik obrazu -> zapis
+            var fileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await dto.Image.CopyToAsync(stream);
+            }
+
+            dto.ImageUrl = $"/images/{fileName}";
+        }
+        // Jeżeli obrazek nie został zmieniony, zostaje poprzedni ImageUrl
+
         var updated = await this.productService.UpdateAsync(id, dto);
         if (!updated)
-        {
-            return this.NotFound();
-        }
+            return NotFound();
 
-        return this.NoContent();
+        return RedirectToAction(nameof(Details), new { id });
     }
 
-    [HttpDelete("{id}")]
+    // GET: /Products/Delete/5
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await this.productService.DeleteAsync(id);
-        if (!deleted)
-        {
-            return this.NotFound();
-        }
+        var product = await this.productService.GetByIdAsync(id);
+        if (product == null)
+            return NotFound();
 
-        return this.NoContent();
+        return View(product);
     }
 
-    [HttpGet("filter")]
+    // POST: /Products/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var deleted = await this.productService.DeleteAsync(id);
+        if (!deleted)
+            return NotFound();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // GET: /Products/Filter
     public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
     {
-        if (!this.ModelState.IsValid)
-        {
-            return this.BadRequest(this.ModelState);
-        }
+        if (!ModelState.IsValid)
+            return View("Index", new List<ProductDto>());
 
         var products = await this.productService.GetFilteredAsync(filterDto);
-        return this.Ok(products);
+        return View("Index", products);
     }
 }

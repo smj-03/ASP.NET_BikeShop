@@ -1,0 +1,22 @@
+﻿@model BikeShop.Models.ProductDto
+
+@{
+    ViewData["Title"] = "Usuń produkt";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3>Czy na pewno chcesz usunąć ten produkt?</h3>
+
+<div>
+    <h4>@Model.Name</h4>
+    <img src="@Model.ImageUrl" alt="@Model.Name" style="max-height:200px;" />
+    <p>@Model.Description</p>
+    <p><strong>Cena:</strong> @Model.Price.ToString("C")</p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

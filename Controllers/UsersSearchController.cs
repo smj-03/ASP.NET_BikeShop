@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BikeShop.Controllers;
- 
+
 [Authorize]
-[ApiController]
-[Route("api/users")]
+[Route("[controller]")]
 public class UsersSearchController : Controller
 {
     private readonly IUserSearchService _userSearchService;
@@ -17,10 +16,23 @@ public class UsersSearchController : Controller
         _userSearchService = userSearchService;
     }
 
+    // Wyświetla formularz wyszukiwania użytkowników
     [HttpGet("search")]
-    public async Task<IActionResult> SearchUsers([FromQuery] UserSearchDto dto)
+    public IActionResult Search()
     {
+        return View(new UserSearchDto());
+    }
+
+    // Obsługuje wyszukiwanie (POST lub GET)
+    [HttpPost("search")]
+    public async Task<IActionResult> Search(UserSearchDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(dto);
+        }
+
         var result = await _userSearchService.SearchUsersAsync(dto, User);
-        return Ok(result);
+        return View("SearchResults", result);
     }
 }

@@ -1,0 +1,41 @@
+﻿@model IEnumerable<BikeShop.Models.ProductDto>
+
+@{
+    ViewData["Title"] = "Lista produktów";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nowy produkt</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Obrazek</th>
+        <th>Nazwa</th>
+        <th>Opis</th>
+        <th>Cena</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var product in Model)
+    {
+        <tr>
+            <td>
+                <img src="@product.ImageUrl" alt="@product.Name" style="max-height:100px;" />
+            </td>
+            <td>@product.Name</td>
+            <td>@product.Description</td>
+            <td>@product.Price.ToString("C")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-info btn-sm">Szczegóły</a>
+                <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-warning btn-sm">Edytuj</a>
+                <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger btn-sm">Usuń</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

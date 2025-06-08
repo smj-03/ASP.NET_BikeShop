@@ -1,0 +1,26 @@
+﻿@model BikeShop.Models.OrderStatusUpdateDto
+
+@{
+    ViewData["Title"] = "Zmień status zamówienia";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="EditStatus" method="post" asp-route-id="@ViewContext.RouteData.Values["id"]">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="NewStatus"></label>
+        <select asp-for="NewStatus" class="form-control" asp-items="Html.GetEnumSelectList<BikeShop.Models.Enums.OrderStatus>()">
+            <option value="">-- Wybierz status --</option>
+        </select>
+        <span asp-validation-for="NewStatus" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+    <a asp-action="Details" asp-route-id="@ViewContext.RouteData.Values["id"]" class="btn btn-secondary">Anuluj</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
