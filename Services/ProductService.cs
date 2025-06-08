@@ -6,58 +6,69 @@ namespace BikeShop.Services;
 
 public class ProductService : IProductService
 {
-    private readonly AppDbContext _context;
-    private readonly ProductMapper _mapper;
+    private readonly AppDbContext context;
+    private readonly ProductMapper mapper;
 
     public ProductService(AppDbContext context, ProductMapper mapper)
     {
-        _context = context;
-        _mapper = mapper;
+        this.context = context;
+        this.mapper = mapper;
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllAsync()
     {
-        var products = await _context.Products.ToListAsync();
-        return products.Select(p => _mapper.Map(p));
+        var products = await this.context.Products.ToListAsync();
+        return products.Select(p => this.mapper.Map(p));
     }
 
     public async Task<ProductDto?> GetByIdAsync(int id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null) return null;
-        return _mapper.Map(product);
+        var product = await this.context.Products.FindAsync(id);
+        if (product == null)
+        {
+            return null;
+        }
+
+        return this.mapper.Map(product);
     }
 
     public async Task<ProductDto> CreateAsync(ProductCreateUpdateDto dto)
     {
-        var product = _mapper.Map(dto);
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
-        return _mapper.Map(product);
+        var product = this.mapper.Map(dto);
+        this.context.Products.Add(product);
+        await this.context.SaveChangesAsync();
+        return this.mapper.Map(product);
     }
 
     public async Task<bool> UpdateAsync(int id, ProductCreateUpdateDto dto)
     {
-        var existingProduct = await _context.Products.FindAsync(id);
-        if (existingProduct == null) return false;
+        var existingProduct = await this.context.Products.FindAsync(id);
+        if (existingProduct == null)
+        {
+            return false;
+        }
 
-        _mapper.UpdateProductFromDto(dto, existingProduct);
-        await _context.SaveChangesAsync();
+        this.mapper.UpdateProductFromDto(dto, existingProduct);
+        await this.context.SaveChangesAsync();
         return true;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null) return false;
+        var product = await this.context.Products.FindAsync(id);
+        if (product == null)
+        {
+            return false;
+        }
 
-        _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
+        this.context.Products.Remove(product);
+        await this.context.SaveChangesAsync();
         return true;
     }
+
     public async Task<IEnumerable<ProductDto>> GetFilteredAsync(ProductFilterDto filter)
     {
-        var query = _context.Products.AsQueryable();
+        var query = this.context.Products.AsQueryable();
 
         if (filter.Categories != null && filter.Categories.Any())
         {
@@ -75,6 +86,6 @@ public class ProductService : IProductService
         }
 
         var products = await query.ToListAsync();
-        return products.Select(p => _mapper.Map(p));
+        return products.Select(p => this.mapper.Map(p));
     }
 }

@@ -9,5 +9,5 @@ public class CreateOrderDto
 
     [Required]
     [MinLength(1)]
-    public List<OrderProductDto> Products { get; set; } = new();
+    public List<OrderProductDto> Products { get; set; } = new ();
 }

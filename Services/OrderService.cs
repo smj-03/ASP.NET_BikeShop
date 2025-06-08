@@ -8,13 +8,13 @@ namespace BikeShop.Services;
 
 public class OrderService : IOrderService
 {
-       private readonly AppDbContext _context;
-    private readonly OrderMapper _mapper;
+    private readonly AppDbContext context;
+    private readonly OrderMapper mapper;
 
     public OrderService(AppDbContext context, OrderMapper mapper)
     {
-        _context = context;
-        _mapper = mapper;
+        this.context = context;
+        this.mapper = mapper;
     }
 
     public async Task<OrderDetailsDto> CreateAsync(CreateOrderDto dto)
@@ -24,48 +24,53 @@ public class OrderService : IOrderService
             CustomerId = dto.CustomerId,
             CreatedAt = DateTime.UtcNow,
             Status = OrderStatus.Pending,
-            Items = new List<OrderItem>()
+            Items = new List<OrderItem>(),
         };
 
         foreach (var productDto in dto.Products)
         {
-            var product = await _context.Products.FindAsync(productDto.ProductId);
+            var product = await this.context.Products.FindAsync(productDto.ProductId);
             if (product == null)
+            {
                 throw new ArgumentException($"Produkt o ID {productDto.ProductId} nie istnieje");
+            }
 
             order.Items.Add(new OrderItem
             {
                 ProductId = product.Id,
-                Quantity = productDto.Quantity
+                Quantity = productDto.Quantity,
             });
         }
 
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
+        this.context.Orders.Add(order);
+        await this.context.SaveChangesAsync();
 
-        await _context.Entry(order)
+        await this.context.Entry(order)
             .Collection(o => o.Items)
             .Query()
             .Include(i => i.Product)
             .LoadAsync();
 
-        return _mapper.ToOrderDetailsDto(order);
+        return this.mapper.ToOrderDetailsDto(order);
     }
 
     public async Task<OrderDetailsDto?> GetByIdAsync(int id)
     {
-        var order = await _context.Orders
+        var order = await this.context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(o => o.Id == id);
 
-        return order == null ? null : _mapper.ToOrderDetailsDto(order);
+        return order == null ? null : this.mapper.ToOrderDetailsDto(order);
     }
 
     public async Task<bool> UpdateStatusAsync(int id, OrderStatusUpdateDto dto)
     {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null) return false;
+        var order = await this.context.Orders.FindAsync(id);
+        if (order == null)
+        {
+            return false;
+        }
 
         if (order.Status != OrderStatus.Pending)
         {
@@ -78,8 +83,7 @@ public class OrderService : IOrderService
         }
 
         order.Status = dto.NewStatus;
-        await _context.SaveChangesAsync();
+        await this.context.SaveChangesAsync();
         return true;
     }
-    
 }

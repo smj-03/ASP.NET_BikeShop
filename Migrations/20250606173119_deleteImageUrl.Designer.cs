@@ -13,7 +13,7 @@ namespace BikeShop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20250606173119_deleteImageUrl")]
-    partial class deleteImageUrl
+    partial class DeleteImageUrl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

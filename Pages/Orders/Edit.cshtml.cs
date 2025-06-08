@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 public class EditModel : PageModel
 {
-    private readonly AppDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext context;
+    private readonly UserManager<ApplicationUser> userManager;
 
     public EditModel(AppDbContext context, UserManager<ApplicationUser> userManager)
     {
-        _context = context;
-        _userManager = userManager;
+        this.context = context;
+        this.userManager = userManager;
     }
 
     [BindProperty]
@@ -21,32 +21,38 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await this.userManager.GetUserAsync(this.User);
 
-        Order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
+        this.Order = await this.context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
 
-        if (Order == null)
-            return NotFound();
+        if (this.Order == null)
+        {
+            return this.NotFound();
+        }
 
-        return Page();
+        return this.Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-            return Page();
+        if (!this.ModelState.IsValid)
+        {
+            return this.Page();
+        }
 
-        var user = await _userManager.GetUserAsync(User);
-        var orderToUpdate = await _context.Orders.FirstOrDefaultAsync(o => o.Id == Order.Id && o.CustomerId == user.Id);
+        var user = await this.userManager.GetUserAsync(this.User);
+        var orderToUpdate = await this.context.Orders.FirstOrDefaultAsync(o => o.Id == this.Order.Id && o.CustomerId == user.Id);
 
         if (orderToUpdate == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        orderToUpdate.CreatedAt = Order.CreatedAt;
-        orderToUpdate.Status = Order.Status;
+        orderToUpdate.CreatedAt = this.Order.CreatedAt;
+        orderToUpdate.Status = this.Order.Status;
 
-        await _context.SaveChangesAsync();
+        await this.context.SaveChangesAsync();
 
-        return RedirectToPage("Index");
+        return this.RedirectToPage("Index");
     }
 }

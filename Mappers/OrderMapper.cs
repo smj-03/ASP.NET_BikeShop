@@ -7,6 +7,7 @@ namespace BikeShop.Mappers;
 public partial class OrderMapper
 {
     public partial Order ToOrder(CreateOrderDto dto);
+
     public partial OrderDetailsDto ToOrderDetailsDto(Order order);
 
     [MapProperty(nameof(OrderItem.ProductId), nameof(OrderProductDetailsDto.ProductId))]

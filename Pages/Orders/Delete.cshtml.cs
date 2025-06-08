@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 public class DeleteModel : PageModel
 {
-    private readonly AppDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext context;
+    private readonly UserManager<ApplicationUser> userManager;
 
     public DeleteModel(AppDbContext context, UserManager<ApplicationUser> userManager)
     {
-        _context = context;
-        _userManager = userManager;
+        this.context = context;
+        this.userManager = userManager;
     }
 
     [BindProperty]
@@ -21,26 +21,30 @@ public class DeleteModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        var user = await _userManager.GetUserAsync(User);
-        Order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
+        var user = await this.userManager.GetUserAsync(this.User);
+        this.Order = await this.context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
 
-        if (Order == null)
-            return NotFound();
+        if (this.Order == null)
+        {
+            return this.NotFound();
+        }
 
-        return Page();
+        return this.Page();
     }
 
     public async Task<IActionResult> OnPostAsync(int id)
     {
-        var user = await _userManager.GetUserAsync(User);
-        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
+        var user = await this.userManager.GetUserAsync(this.User);
+        var order = await this.context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
 
         if (order == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        _context.Orders.Remove(order);
-        await _context.SaveChangesAsync();
+        this.context.Orders.Remove(order);
+        await this.context.SaveChangesAsync();
 
-        return RedirectToPage("Index");
+        return this.RedirectToPage("Index");
     }
 }

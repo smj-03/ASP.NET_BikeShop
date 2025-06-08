@@ -1,39 +1,43 @@
-﻿using BikeShop.Data;
+﻿using System.Threading.Tasks;
+using BikeShop.Data;
 using BikeShop.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 public class DetailsModel : PageModel
 {
-    private readonly AppDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext context;
+    private readonly UserManager<ApplicationUser> userManager;
 
     public DetailsModel(AppDbContext context, UserManager<ApplicationUser> userManager)
     {
-        _context = context;
-        _userManager = userManager;
+        this.context = context;
+        this.userManager = userManager;
     }
 
     public Order Order { get; set; }
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await this.userManager.GetUserAsync(this.User);
 
         if (user == null)
-            return Unauthorized();
+        {
+            return this.Unauthorized();
+        }
 
-        Order = await _context.Orders
+        this.Order = await this.context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
 
-        if (Order == null)
-            return NotFound();
+        if (this.Order == null)
+        {
+            return this.NotFound();
+        }
 
-        return Page();
+        return this.Page();
     }
 }

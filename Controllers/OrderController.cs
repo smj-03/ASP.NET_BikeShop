@@ -7,35 +7,40 @@ namespace BikeShop.Controllers;
 
 [ApiController]
 [Route("api/orders")]
-public class OrderController: Controller
+public class OrderController : Controller
 {
-    private readonly IOrderService _orderService;
+    private readonly IOrderService orderService;
 
     public OrderController(IOrderService orderService)
     {
-        _orderService = orderService;
+        this.orderService = orderService;
     }
+
     // POST: api/orders
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
-            return Unauthorized();
+        {
+            return this.Unauthorized();
+        }
 
         dto.CustomerId = userId;
 
         try
         {
-            var result = await _orderService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetOrderById), new { id = result.Id }, result);
+            var result = await this.orderService.CreateAsync(dto);
+            return this.CreatedAtAction(nameof(this.GetOrderById), new { id = result.Id }, result);
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            return this.BadRequest(new { error = ex.Message });
         }
     }
 
@@ -43,32 +48,36 @@ public class OrderController: Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById(int id)
     {
-        var order = await _orderService.GetByIdAsync(id);
+        var order = await this.orderService.GetByIdAsync(id);
         if (order == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return Ok(order);
+        return this.Ok(order);
     }
 
     // PUT: api/orders/5/status
     [HttpPut("{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] OrderStatusUpdateDto dto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
 
         try
         {
-            var success = await _orderService.UpdateStatusAsync(id, dto);
-            return success ? NoContent() : NotFound();
+            var success = await this.orderService.UpdateStatusAsync(id, dto);
+            return success ? this.NoContent() : this.NotFound();
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            return this.BadRequest(new { error = ex.Message });
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            return this.BadRequest(new { error = ex.Message });
         }
     }
 }

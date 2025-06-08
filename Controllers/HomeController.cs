@@ -7,12 +7,13 @@ namespace BikeShop.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IProductService _productService;
-    
+    private readonly IProductService productService;
+
     public HomeController(IProductService productService)
     {
-        _productService = productService;
+        this.productService = productService;
     }
+
     public IActionResult Privacy()
     {
         return this.View();
@@ -23,15 +24,16 @@ public class HomeController : Controller
     {
         return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
     }
+
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] ProductFilterDto filter)
     {
-        var products = await _productService.GetFilteredAsync(filter);
+        var products = await this.productService.GetFilteredAsync(filter);
         var vm = new IndexViewModel
         {
             Filter = filter,
-            Products = products
+            Products = products,
         };
-        return View(vm);
+        return this.View(vm);
     }
 }
