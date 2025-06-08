@@ -28,6 +28,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IRoleInitializer, RoleInitializer>();
 
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<ProductMapper>();
@@ -35,11 +36,10 @@ builder.Services.AddScoped<OrderMapper>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    await CreateRoles(services);
+    var initializer = scope.ServiceProvider.GetRequiredService<IRoleInitializer>();
+    await initializer.EnsureRolesExistAsync();
 }
 
 // Configure the HTTP request pipeline.
@@ -68,18 +68,3 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
-
-// Method to make new roles
-static async Task CreateRoles(IServiceProvider serviceProvider)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roleNames = { "Admin", "Employee", "Client" };
-
-    foreach (var roleName in roleNames)
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-    }
-}
