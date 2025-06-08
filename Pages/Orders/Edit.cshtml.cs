@@ -1,5 +1,6 @@
 ﻿using BikeShop.Data;
 using BikeShop.Models;
+using BikeShop.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,52 +8,52 @@ using Microsoft.EntityFrameworkCore;
 
 public class EditModel : PageModel
 {
-    private readonly AppDbContext context;
-    private readonly UserManager<ApplicationUser> userManager;
+    private readonly AppDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public EditModel(AppDbContext context, UserManager<ApplicationUser> userManager)
     {
-        this.context = context;
-        this.userManager = userManager;
+        _context = context;
+        _userManager = userManager;
     }
 
     [BindProperty]
-    public Order Order { get; set; }
+    public int Id { get; set; }
+
+    [BindProperty]
+    public OrderStatus Status { get; set; }
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        var user = await this.userManager.GetUserAsync(this.User);
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Unauthorized();
 
-        this.Order = await this.context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
+        var order = await _context.Orders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == user.Id);
 
-        if (this.Order == null)
-        {
-            return this.NotFound();
-        }
+        if (order == null) return NotFound();
 
-        return this.Page();
+        Id = order.Id;
+        Status = order.Status;
+
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!this.ModelState.IsValid)
-        {
-            return this.Page();
-        }
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Unauthorized();
 
-        var user = await this.userManager.GetUserAsync(this.User);
-        var orderToUpdate = await this.context.Orders.FirstOrDefaultAsync(o => o.Id == this.Order.Id && o.CustomerId == user.Id);
+        var order = await _context.Orders
+            .FirstOrDefaultAsync(o => o.Id == Id && o.CustomerId == user.Id);
 
-        if (orderToUpdate == null)
-        {
-            return this.NotFound();
-        }
+        if (order == null) return NotFound();
 
-        orderToUpdate.CreatedAt = this.Order.CreatedAt;
-        orderToUpdate.Status = this.Order.Status;
+        order.Status = Status;
 
-        await this.context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
-        return this.RedirectToPage("Index");
+        return RedirectToPage("Details", new { id = Id });
     }
 }

@@ -1,26 +1,23 @@
 ﻿@page "{id:int}"
-@using BikeShop.Models.Enums
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model EditModel
+@using BikeShop.Models.Enums
 @{
-    Layout = "_Layout";
+    ViewData["Title"] = "Edycja statusu zamówienia";
 }
-<h1>Edit Order</h1>
+
+<h1>Zmień status zamówienia</h1>
 
 <form method="post">
-    <input type="hidden" asp-for="Order.Id" />
+    <input type="hidden" asp-for="Id" />
+    
     <div class="form-group">
-        <label asp-for="Order.CreatedAt"></label>
-        <input asp-for="Order.CreatedAt" class="form-control" />
-        <span asp-validation-for="Order.CreatedAt" class="text-danger"></span>
+        <label asp-for="Status"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<OrderStatus>()" class="form-control"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Order.Status"></label>
-        <select asp-for="Order.Status" asp-items="Html.GetEnumSelectList<OrderStatus>()" class="form-control"></select>
-        <span asp-validation-for="Order.Status" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-page="Index" class="btn btn-secondary">Back to List</a>
+
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a asp-page="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Anuluj</a>
 </form>
 
 @section Scripts {
