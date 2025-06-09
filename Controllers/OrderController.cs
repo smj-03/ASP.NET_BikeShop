@@ -3,6 +3,7 @@ using BikeShop.Models;
 using BikeShop.Models.Enums;
 using BikeShop.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BikeShop.Controllers;
 
@@ -10,17 +11,26 @@ namespace BikeShop.Controllers;
 public class OrderController : Controller
 {
     private readonly IOrderService orderService;
+    private readonly IProductService productService;
 
-    public OrderController(IOrderService orderService)
+    public OrderController(IOrderService orderService, IProductService productService)
     {
         this.orderService = orderService;
+        this.productService = productService;
     }
 
     // GET: orders/create
     [HttpGet("create")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        // Wyświetl formularz tworzenia zamówienia
+        var products = (await this.productService.GetAllAsync())
+            .Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.Name
+            }).ToList();
+
+        ViewBag.Products = products;
         return this.View(new CreateOrderDto());
     }
 
@@ -39,7 +49,14 @@ public class OrderController : Controller
 
         if (!this.ModelState.IsValid)
         {
-            var errors = this.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            var products = (await this.productService.GetAllAsync())
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Name
+                }).ToList();
+
+            ViewBag.Products = products;
             return this.View(dto);
         }
 
@@ -50,6 +67,14 @@ public class OrderController : Controller
         }
         catch (Exception ex)
         {
+            var products = (await this.productService.GetAllAsync())
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Name
+                }).ToList();
+
+            ViewBag.Products = products;
             this.ModelState.AddModelError(string.Empty, ex.Message);
             return this.View(dto);
         }
