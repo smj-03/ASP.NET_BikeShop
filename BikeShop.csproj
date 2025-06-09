@@ -45,6 +45,7 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Shered\_ValidationScriptsPartial.cshtml" />
+
       <_ContentIncludedByDefault Remove="Pages\Orders\Create.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Orders\Delete.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Orders\Details.cshtml" />
@@ -55,6 +56,7 @@
       <_ContentIncludedByDefault Remove="Pages\Shared\_ValidationScriptsPartial.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\_ViewStart.cshtml" />
+
     </ItemGroup>
 
 </Project>

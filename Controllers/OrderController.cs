@@ -1,10 +1,12 @@
 ﻿using System.Security.Claims;
 using BikeShop.Models;
 using BikeShop.Models.Enums;
+
 using BikeShop.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BikeShop.Controllers;
+
 
 [Route("orders")]
 public class OrderController : Controller
@@ -15,6 +17,7 @@ public class OrderController : Controller
     {
         this.orderService = orderService;
     }
+
 
     // GET: orders/create
     [HttpGet("create")]
@@ -71,12 +74,14 @@ public class OrderController : Controller
     // GET: orders/editstatus/5
     [HttpGet("editstatus/{id}")]
     public async Task<IActionResult> EditStatus(int id)
+
     {
         var order = await this.orderService.GetByIdAsync(id);
         if (order == null)
         {
             return this.NotFound();
         }
+
 
         if (!Enum.TryParse<OrderStatus>(order.Status, out var statusEnum))
         {
@@ -104,6 +109,7 @@ public class OrderController : Controller
         try
         {
             var success = await this.orderService.UpdateStatusAsync(id, dto);
+
             if (!success)
             {
                 return this.NotFound();

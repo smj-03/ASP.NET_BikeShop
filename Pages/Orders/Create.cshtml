@@ -1,0 +1,36 @@
+﻿@page
+@model BikeShop.Pages.Orders.CreateModel
+@{
+    ViewData["Title"] = "Nowe zamówienie";
+}
+
+<h1>Nowe zamówienie</h1>
+
+<form method="post">
+    <div asp-validation-summary="All"></div>
+
+    @for (int i = 0; i < Model.Products.Count; i++)
+    {
+        <div class="form-group">
+            <label asp-for="Products[i].ProductId">Produkt</label>
+            <select asp-for="Products[i].ProductId" class="form-control">
+                @foreach (var product in Model.AvailableProducts)
+                {
+                    <option value="@product.Id">@product.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Products[i].Quantity">Ilość</label>
+            <input asp-for="Products[i].Quantity" class="form-control" />
+        </div>
+        <hr />
+    }
+
+    <button type="submit" class="btn btn-primary">Złóż zamówienie</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

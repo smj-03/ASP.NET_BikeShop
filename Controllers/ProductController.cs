@@ -20,6 +20,7 @@ public class ProductsController : Controller
     {
         var products = await this.productService.GetAllAsync();
         return this.View(products);
+
     }
 
     // GET: /Products/Details/5
@@ -128,6 +129,7 @@ public class ProductsController : Controller
             return this.NotFound();
         }
 
+
         return this.RedirectToAction(nameof(this.Details), new { id });
     }
 
@@ -164,11 +166,11 @@ public class ProductsController : Controller
     public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
     {
         if (!this.ModelState.IsValid)
-        {
             return this.View("Index", new List<ProductDto>());
         }
 
         var products = await this.productService.GetFilteredAsync(filterDto);
         return this.View("Index", products);
+
     }
 }

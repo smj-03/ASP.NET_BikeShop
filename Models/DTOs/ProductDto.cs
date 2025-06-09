@@ -17,4 +17,5 @@ public class ProductDto
     public string Category { get; set; } = null!;
 
     public string Manufacturer { get; set; } = null!;
+
 }
