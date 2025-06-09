@@ -10,14 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -28,6 +26,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IUserSearchService, UserSearchService>();
+builder.Services.AddScoped<IRoleInitializer, RoleInitializer>();
+
 
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<ProductMapper>();
@@ -35,11 +36,10 @@ builder.Services.AddScoped<OrderMapper>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    await CreateRoles(services);
+    var initializer = scope.ServiceProvider.GetRequiredService<IRoleInitializer>();
+    await initializer.EnsureRolesExistAsync();
 }
 
 // Configure the HTTP request pipeline.
@@ -56,9 +56,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapRazorPages();
-app.UseSwagger();
-app.UseSwaggerUI();
 app.UseStaticFiles();
 app.MapStaticAssets();
 
@@ -67,19 +64,6 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+
 app.Run();
 
-// Method to make new roles
-static async Task CreateRoles(IServiceProvider serviceProvider)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roleNames = { "Admin", "Employee", "Client" };
-
-    foreach (var roleName in roleNames)
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-    }
-}

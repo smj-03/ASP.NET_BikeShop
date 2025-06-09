@@ -1,0 +1,33 @@
+﻿@model BikeShop.Models.UserSearchDto
+
+@{
+    ViewData["Title"] = "Wyszukiwanie użytkowników";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Search" method="post" class="mb-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Query" class="form-label">Szukaj (imię, email itp.)</label>
+        <input asp-for="Query" class="form-control" />
+        <span asp-validation-for="Query" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Role" class="form-label">Rola użytkownika</label>
+        <select asp-for="Role" class="form-select">
+            <option value="">-- Wybierz rolę --</option>
+            <option value="Client">Klient</option>
+            <option value="Employee">Pracownik</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Szukaj</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

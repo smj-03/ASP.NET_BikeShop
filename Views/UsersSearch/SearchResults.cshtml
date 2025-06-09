@@ -1,0 +1,39 @@
+﻿@model IEnumerable<BikeShop.Models.UserDto>
+
+@{
+    ViewData["Title"] = "Wyniki wyszukiwania użytkowników";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!Model.Any())
+{
+    <p>Nie znaleziono użytkowników spełniających kryteria.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nazwa użytkownika</th>
+            <th>Email</th>
+            <th>Rola</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<p>
+    <a asp-action="Search" class="btn btn-secondary">Nowe wyszukiwanie</a>
+</p>

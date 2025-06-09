@@ -4,8 +4,7 @@ namespace BikeShop.Models;
 
 public class CreateOrderDto
 {
-    [Required]
-    public string CustomerId { get; set; }
+    public string? CustomerId { get; set; }
 
     [Required]
     [MinLength(1)]
