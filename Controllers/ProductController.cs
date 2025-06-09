@@ -64,6 +64,7 @@ public class ProductsController : Controller
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
             await dto.Image.CopyToAsync(stream);
+
         }
 
         dto.ImageUrl = $"/images/{fileName}";

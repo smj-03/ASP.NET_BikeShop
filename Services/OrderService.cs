@@ -87,11 +87,12 @@ public class OrderService : IOrderService
         await this.context.SaveChangesAsync();
         return true;
     }
-    
+   
     public async Task<List<Order>> GetAllAsync()
     {
         return await context.Orders
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
+
 }
