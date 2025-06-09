@@ -11,6 +11,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         : base(options)
     {
     }
+
     public DbSet<Product> Products { get; set; }
+
+    public DbSet<Order> Orders { get; set; }
+
+    public DbSet<OrderItem> OrderItems { get; set; }
+
     public DbSet<Bike> Bikes { get; set; }
 }

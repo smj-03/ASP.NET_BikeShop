@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using BikeShop.Data;
 using BikeShop.Mappers;
 using BikeShop.Models;
@@ -9,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -20,10 +27,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
-// Mozna niby zrobic to po przez dependency injection, ale paczka nie działa poprawnie
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<ProductMapper>();
+builder.Services.AddScoped<OrderMapper>();
 
 var app = builder.Build();
 
@@ -48,6 +56,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapRazorPages();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseStaticFiles();
@@ -57,7 +66,6 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
 

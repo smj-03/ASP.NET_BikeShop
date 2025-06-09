@@ -13,7 +13,7 @@ namespace BikeShop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20250606163146_products")]
-    partial class products
+    partial class Products
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

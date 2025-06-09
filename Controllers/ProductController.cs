@@ -10,28 +10,30 @@ namespace BikeShop.Controllers;
 [Authorize(Roles = "Admin,Employee")]
 public class ProductsController : ControllerBase
 {
-    private readonly IProductService _productService;
+    private readonly IProductService productService;
 
     public ProductsController(IProductService productService)
     {
-        _productService = productService;
+        this.productService = productService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await _productService.GetAllAsync();
-        return Ok(products);
+        var products = await this.productService.GetAllAsync();
+        return this.Ok(products);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var product = await _productService.GetByIdAsync(id);
+        var product = await this.productService.GetByIdAsync(id);
         if (product == null)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return Ok(product);
+        return this.Ok(product);
     }
 
     [HttpPost]
@@ -49,9 +51,9 @@ public class ProductsController : ControllerBase
         {
             await imageFile.CopyToAsync(stream);
         }
-        
+
         var imageUrl = $"/images/{fileName}";
-        
+
         var productDto = new ProductCreateUpdateDto
         {
             Name = dto.Name,
@@ -60,11 +62,11 @@ public class ProductsController : ControllerBase
             StockQuantity = dto.StockQuantity,
             Category = dto.Category,
             Manufacturer = dto.Manufacturer,
-            ImageUrl = imageUrl
+            ImageUrl = imageUrl,
         };
 
-        var created = await _productService.CreateAsync(productDto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        var created = await this.productService.CreateAsync(productDto);
+        return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id}")]
@@ -72,31 +74,37 @@ public class ProductsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(int id, [FromBody] ProductCreateUpdateDto dto)
     {
-        var updated = await _productService.UpdateAsync(id, dto);
+        var updated = await this.productService.UpdateAsync(id, dto);
         if (!updated)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return NoContent();
+        return this.NoContent();
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _productService.DeleteAsync(id);
+        var deleted = await this.productService.DeleteAsync(id);
         if (!deleted)
-            return NotFound();
+        {
+            return this.NotFound();
+        }
 
-        return NoContent();
+        return this.NoContent();
     }
-    
+
     [HttpGet("filter")]
     public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
 
-        var products = await _productService.GetFilteredAsync(filterDto);
-        return Ok(products);
+        var products = await this.productService.GetFilteredAsync(filterDto);
+        return this.Ok(products);
     }
 }
