@@ -4,26 +4,35 @@ using BikeShop.Models.Enums;
 
 using BikeShop.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BikeShop.Controllers;
-
 
 [Route("orders")]
 public class OrderController : Controller
 {
     private readonly IOrderService orderService;
+    private readonly IProductService productService;
 
-    public OrderController(IOrderService orderService)
+    public OrderController(IOrderService orderService, IProductService productService)
     {
         this.orderService = orderService;
+        this.productService = productService;
     }
-
 
     // GET: orders/create
     [HttpGet("create")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        // Wyświetl formularz tworzenia zamówienia
+        var products = (await this.productService.GetAllAsync())
+            .Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.Name
+            }).ToList();
+
+        ViewBag.Products = products;
+
         return this.View(new CreateOrderDto());
     }
 
@@ -42,7 +51,16 @@ public class OrderController : Controller
 
         if (!this.ModelState.IsValid)
         {
-            var errors = this.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+            var products = (await this.productService.GetAllAsync())
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Name
+                }).ToList();
+
+            ViewBag.Products = products;
+
             return this.View(dto);
         }
 
@@ -53,6 +71,14 @@ public class OrderController : Controller
         }
         catch (Exception ex)
         {
+            var products = (await this.productService.GetAllAsync())
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Name
+                }).ToList();
+
+            ViewBag.Products = products;
             this.ModelState.AddModelError(string.Empty, ex.Message);
             return this.View(dto);
         }
@@ -74,15 +100,12 @@ public class OrderController : Controller
     // GET: orders/editstatus/5
     [HttpGet("editstatus/{id}")]
     public async Task<IActionResult> EditStatus(int id)
-
     {
         var order = await this.orderService.GetByIdAsync(id);
         if (order == null)
         {
             return this.NotFound();
         }
-
-
         if (!Enum.TryParse<OrderStatus>(order.Status, out var statusEnum))
         {
             return this.BadRequest("Niepoprawny status zamówienia.");
@@ -109,7 +132,6 @@ public class OrderController : Controller
         try
         {
             var success = await this.orderService.UpdateStatusAsync(id, dto);
-
             if (!success)
             {
                 return this.NotFound();

@@ -11,4 +11,6 @@ public class OrderDetailsDto
     public DateTime CreatedAt { get; set; }
 
     public string Status { get; set; }
+    
+    public List<OrderCommentDto> Comments { get; set; } = new ();
 }
