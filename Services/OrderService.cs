@@ -59,6 +59,7 @@ public class OrderService : IOrderService
         var order = await this.context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
+            .Include(o => o.Comments)        // dołącz komentarze zamówienia
             .FirstOrDefaultAsync(o => o.Id == id);
 
         return order == null ? null : this.mapper.ToOrderDetailsDto(order);
@@ -85,5 +86,12 @@ public class OrderService : IOrderService
         order.Status = dto.NewStatus;
         await this.context.SaveChangesAsync();
         return true;
+    }
+    
+    public async Task<List<Order>> GetAllAsync()
+    {
+        return await context.Orders
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
     }
 }
