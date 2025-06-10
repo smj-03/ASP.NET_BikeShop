@@ -25,6 +25,7 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow,
             Status = OrderStatus.Pending,
             Items = new List<OrderItem>(),
+            Comments = new List<OrderComment>()
         };
 
         foreach (var productDto in dto.Products)
