@@ -25,6 +25,7 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow,
             Status = OrderStatus.Pending,
             Items = new List<OrderItem>(),
+            Comments = new List<OrderComment>()
         };
 
         foreach (var productDto in dto.Products)
@@ -87,12 +88,11 @@ public class OrderService : IOrderService
         await this.context.SaveChangesAsync();
         return true;
     }
-   
+    
     public async Task<List<Order>> GetAllAsync()
     {
         return await context.Orders
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
-
 }

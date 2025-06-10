@@ -17,7 +17,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Order> Orders { get; set; }
 
     public DbSet<OrderItem> OrderItems { get; set; }
-   
+    
     public DbSet<OrderComment> OrderComments { get; set; }
 
     public DbSet<Bike> Bikes { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using BikeShop.Models;
 using BikeShop.Models.Enums;
-
 using BikeShop.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -32,7 +31,6 @@ public class OrderController : Controller
             }).ToList();
 
         ViewBag.Products = products;
-
         return this.View(new CreateOrderDto());
     }
 
@@ -51,7 +49,6 @@ public class OrderController : Controller
 
         if (!this.ModelState.IsValid)
         {
-
             var products = (await this.productService.GetAllAsync())
                 .Select(p => new SelectListItem
                 {
@@ -60,7 +57,6 @@ public class OrderController : Controller
                 }).ToList();
 
             ViewBag.Products = products;
-
             return this.View(dto);
         }
 
@@ -106,6 +102,7 @@ public class OrderController : Controller
         {
             return this.NotFound();
         }
+
         if (!Enum.TryParse<OrderStatus>(order.Status, out var statusEnum))
         {
             return this.BadRequest("Niepoprawny status zamówienia.");
