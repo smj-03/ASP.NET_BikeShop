@@ -29,12 +29,10 @@ builder.Services.AddScoped<IUserSearchService, UserSearchService>();
 builder.Services.AddScoped<IRoleInitializer, RoleInitializer>();
 builder.Services.AddScoped<IOrderCommentService, OrderCommentService>();
 
-
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<ProductMapper>();
 builder.Services.AddScoped<OrderMapper>();
 builder.Services.AddScoped<OrderCommentMapper>();
-
 
 var app = builder.Build();
 
@@ -67,4 +65,3 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
-

@@ -19,7 +19,6 @@
 <form asp-action="Create" method="post" id="order-form">
     @Html.AntiForgeryToken()
 
-
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div id="products-list">
@@ -42,7 +41,6 @@
                            type="number" min="1" class="form-control" />
                     <span asp-validation-for="@Model.Products[i].Quantity" class="text-danger"></span>
                 </div>
-
             </div>
         }
     </div>
@@ -56,6 +54,7 @@
 
     <script>
         let productIndex = @Model.Products.Count;
+
         const productOptions = `@Html.Raw(productOptions.ToString())`;
 
         document.getElementById('add-product-btn').addEventListener('click', function () {
