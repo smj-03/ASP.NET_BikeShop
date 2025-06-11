@@ -1,0 +1,100 @@
+﻿@model List<BikeShop.Models.OrderViewDto>
+@{
+    var filter = (BikeShop.Models.OrderFilterDto)ViewBag.Filter ?? new();
+    int currentPage = ViewBag.Page ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalOrders = ViewBag.TotalOrders ?? 0;
+    int totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+}
+
+<h2>Lista zamówień</h2>
+
+<form method="get" class="mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select name="Status" class="form-select">
+                <option value="">-- Wszystkie --</option>
+                @foreach (var status in Enum.GetValues(typeof(BikeShop.Models.Enums.OrderStatus)))
+                {
+                    if (filter.Status?.ToString() == status.ToString())
+                    {
+                        <option value="@status" selected>@status</option>
+                    }
+                    else
+                    {
+                        <option value="@status">@status</option>
+                    }
+                }
+
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Data od</label>
+            <input name="FromDate" type="date" class="form-control" value="@(filter.FromDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Data do</label>
+            <input name="ToDate" type="date" class="form-control" value="@(filter.ToDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filtruj</button>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+@if (Model.Count == 0)
+{
+    <p>Brak zamówień do wyświetlenia.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Klient</th>
+                <th>Data utworzenia</th>
+                <th>Status</th>
+                <th>Szczegóły</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var order in Model)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.CustomerEmail</td>
+                    <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@order.Status</td>
+                    <td><a href="@Url.Action("Details", new { id = order.Id })">Szczegóły</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new 
+                    { 
+                        page = i, 
+                        pageSize = pageSize, 
+                        Status = filter.Status, 
+                        FromDate = filter.FromDate?.ToString("yyyy-MM-dd"), 
+                        ToDate = filter.ToDate?.ToString("yyyy-MM-dd")
+                    })">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

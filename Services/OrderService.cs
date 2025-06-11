@@ -95,4 +95,78 @@ public class OrderService : IOrderService
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
+    
+    public async Task<List<OrderViewDto>> GetPagedWithDetailsAsync(int page, int pageSize)
+    {
+        var orders = await this.context.Orders
+            .Include(o => o.Items)
+            .Include(o => o.Comments)
+            .Include(o => o.Customer)
+            .OrderByDescending(o => o.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return orders.Select(this.mapper.ToOrderViewDto).ToList();
+    }
+
+    public async Task<List<OrderViewDto>> GetFilteredPagedAsync(OrderFilterDto filter, int page, int pageSize)
+    {
+        var query = context.Orders
+            .Include(o => o.Items).ThenInclude(i => i.Product)
+            .Include(o => o.Comments)
+            .Include(o => o.Customer)
+            .AsQueryable();
+
+        if (filter.Status != null)
+            query = query.Where(o => o.Status == filter.Status);
+
+        if (filter.FromDate != null)
+            query = query.Where(o => o.CreatedAt >= filter.FromDate);
+
+        if (filter.ToDate != null)
+            query = query.Where(o => o.CreatedAt <= filter.ToDate);
+
+        if (!string.IsNullOrWhiteSpace(filter.CustomerId))
+            query = query.Where(o => o.CustomerId == filter.CustomerId);
+
+        var orders = await query
+            .OrderByDescending(o => o.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return orders.Select(o => new OrderViewDto
+        {
+            Id = o.Id,
+            CreatedAt = o.CreatedAt,
+            Status = o.Status,
+            CustomerEmail = o.Customer?.Email ?? "Brak email",
+            Items = o.Items.Select(i => new OrderProductDto
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
+            }).ToList()
+        }).ToList();
+    }
+
+    public async Task<int> GetFilteredCountAsync(OrderFilterDto filter)
+    {
+        var query = context.Orders.AsQueryable();
+
+        if (filter.Status != null)
+            query = query.Where(o => o.Status == filter.Status);
+
+        if (filter.FromDate != null)
+            query = query.Where(o => o.CreatedAt >= filter.FromDate);
+
+        if (filter.ToDate != null)
+            query = query.Where(o => o.CreatedAt <= filter.ToDate);
+
+        if (!string.IsNullOrWhiteSpace(filter.CustomerId))
+            query = query.Where(o => o.CustomerId == filter.CustomerId);
+
+        return await query.CountAsync();
+    }
+
 }

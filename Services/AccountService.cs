@@ -81,4 +81,15 @@ public class AccountService : IAccountService
 
         return userDtos;
     }
+    
+    public IQueryable<UserDto> GetUsersQueryable()
+    {
+        return this.userManager.Users.Select(u => new UserDto
+        {
+            Email = u.Email,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            PhoneNumber = u.PhoneNumber,
+        });
+    }
 }

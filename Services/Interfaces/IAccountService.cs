@@ -18,5 +18,7 @@
         List<UserDto> GetAllUsers();
 
         Task<List<UserDto>> GetAllUsersAsync();
+
+        IQueryable<UserDto> GetUsersQueryable();
     }
 }

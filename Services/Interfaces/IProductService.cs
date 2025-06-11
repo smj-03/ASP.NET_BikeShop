@@ -15,4 +15,6 @@ public interface IProductService
     Task<bool> DeleteAsync(int id);
 
     Task<IEnumerable<ProductDto>> GetFilteredAsync(ProductFilterDto filter);
+    IQueryable<ProductDto> GetAllQueryable();
+    IQueryable<ProductDto> GetFilteredQueryable(ProductFilterDto filter);
 }

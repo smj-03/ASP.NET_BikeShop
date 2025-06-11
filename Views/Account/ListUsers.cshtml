@@ -1,4 +1,5 @@
-﻿@model IEnumerable<BikeShop.Models.UserDto>
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<BikeShop.Models.UserDto>
 
 <h2>Lista Użytkowników</h2>
 <table class="table table-striped">
@@ -22,3 +23,9 @@
     }
     </tbody>
 </table>
+@Html.PagedListPager(Model, page => Url.Action("ListUsers", new { page }), new PagedListRenderOptions
+{
+    UlElementClasses = new[] { "pagination" },
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" }
+})
