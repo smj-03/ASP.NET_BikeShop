@@ -29,9 +29,6 @@
                     @* <li class="nav-item"> *@
                     @*     <a class="nav-link text-dark" asp-controller="OrderComments" asp-action="Add">Dodaj kometarz do zamówienia</a> *@
                     @* </li> *@
-                    @* <li class="nav-item"> *@
-                    @*     <a class="nav-link text-dark" asp-controller="Admin" asp-action="ManageRoles">Zarządzaj rolami</a> *@
-                    @* </li> *@
                     @if (User.IsInRole("Client"))
                     {
                         <li class="nav-item">
@@ -39,13 +36,20 @@
                         </li>
                     }
 
-                    @if (User.IsInRole("Employee"))
+                    @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Dodaj Produkt</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="UsersSearch" asp-action="Search">Wyszukaj użytkownika</a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="ManageRoles">Zarządzaj rolami</a>
                         </li>
                     }
                 </ul>
