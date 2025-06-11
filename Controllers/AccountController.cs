@@ -1,7 +1,10 @@
 ﻿using BikeShop.Models;
 using BikeShop.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 public class AccountController : Controller
 {
@@ -73,11 +76,39 @@ public class AccountController : Controller
 
         return this.View(model);
     }
-
-    [HttpGet]
-    public IActionResult ListUsers()
+    
+    [Authorize(Roles = "Admin,Employee")]
+    public async Task<IActionResult> ListUsers(int? page)
     {
-        var users = this.accountService.GetAllUsers();
-        return this.View(users);
+        int pageSize = 10;
+        int pageNumber = page ?? 1;
+
+        var query = this.userManager.Users.Select(u => new
+        {
+            u.Email,
+            u.FirstName,
+            u.LastName,
+            u.PhoneNumber
+        });
+
+        int totalCount = await query.CountAsync();
+
+        var users = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        // Konwersja na DTO bez Id
+        var userDtos = users.Select(u => new UserDto
+        {
+            Email = u.Email,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            PhoneNumber = u.PhoneNumber
+        }).ToList();
+
+        var pagedList = new X.PagedList.StaticPagedList<UserDto>(userDtos, pageNumber, pageSize, totalCount);
+
+        return View(pagedList);
     }
 }
