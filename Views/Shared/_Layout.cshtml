@@ -23,9 +23,9 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Strona główna</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Produkty</a>
-                    </li>
+                    @* <li class="nav-item"> *@
+                    @*     <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Produkty</a> *@
+                    @* </li> *@
                     @* <li class="nav-item"> *@
                     @*     <a class="nav-link text-dark" asp-controller="Order" asp-action="Create">Nowe zamówienie</a> *@
                     @* </li> *@
@@ -50,6 +50,12 @@
                     @* <li class="nav-item"> *@
                     @*     <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Rejestracja</a> *@
                     @* </li> *@
+                    @if (User.IsInRole("Client"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Order" asp-action="Index">Zamówienia</a>
+                        </li>
+                    }
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     @if (User.Identity.IsAuthenticated)
@@ -59,7 +65,8 @@
                                 <button class="btn btn-primary ms-2" type="submit">Logout</button>
                             </form>
                         </li>
-                        
+
+
                         // TODO: ACCOUNT VIEW 
                         @* <li class="nav-item"> *@
                         @*     <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">Profile</a> *@
