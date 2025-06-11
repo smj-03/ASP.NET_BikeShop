@@ -147,4 +147,29 @@ public class OrderController : Controller
             return this.View(dto);
         }
     }
+    
+    [HttpGet("")]
+    public async Task<IActionResult> Index([FromQuery] OrderFilterDto filter, int page = 1, int pageSize = 10)
+    {
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = this.User.IsInRole("Admin");
+        var isEmployee = this.User.IsInRole("Employee");
+
+        if (!isAdmin && !isEmployee)
+        {
+            filter.CustomerId = userId;
+        }
+
+        int totalOrders = await this.orderService.GetFilteredCountAsync(filter);
+        var orders = await this.orderService.GetFilteredPagedAsync(filter, page, pageSize);
+
+        ViewBag.Filter = filter;
+        ViewBag.Page = page;
+        ViewBag.PageSize = pageSize;
+        ViewBag.TotalOrders = totalOrders;
+
+        return this.View(orders);
+    }
+
+
 }

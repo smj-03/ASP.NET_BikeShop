@@ -12,4 +12,7 @@ public interface IOrderService
     Task<bool> UpdateStatusAsync(int id, OrderStatusUpdateDto dto);
     
     Task<List<Order>> GetAllAsync();
+    Task<int> GetFilteredCountAsync(OrderFilterDto filter);
+    Task<List<OrderViewDto>> GetFilteredPagedAsync(OrderFilterDto filter, int page, int pageSize);
+    Task<List<OrderViewDto>> GetPagedWithDetailsAsync(int page, int pageSize);
 }
