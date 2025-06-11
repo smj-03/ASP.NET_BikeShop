@@ -7,7 +7,7 @@
 <h1>@Model.Name</h1>
 
 <div>
-    <img src="@Model.ImageUrl" alt="@Model.Name" style="max-height:300px;" />
+    <img src="@Model.ImageUrl" alt="@Model.Name" style="max-height:300px;"/>
 </div>
 
 <div>
@@ -15,7 +15,10 @@
     <p><strong>Cena:</strong> @Model.Price.ToString("C")</p>
 </div>
 
-<p>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edytuj</a>
-    <a asp-action="Index" class="btn btn-secondary">Powrót do listy</a>
-</p>
+@if (User.IsInRole("Employee") || User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edytuj</a>
+        <a asp-action="Index" class="btn btn-secondary">Powrót do listy</a>
+    </p>
+}

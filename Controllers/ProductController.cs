@@ -8,7 +8,6 @@ using X.PagedList.Extensions;
 
 namespace BikeShop.Controllers;
 
-[Authorize(Roles = "Admin,Employee")]
 public class ProductsController : Controller
 {
     private readonly IProductService productService;
@@ -60,6 +59,7 @@ public class ProductsController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Consumes("multipart/form-data")]
+    [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> Create(ProductCreateUpdateDto dto)
     {
         if (!this.ModelState.IsValid)
@@ -89,6 +89,7 @@ public class ProductsController : Controller
     }
 
     // GET: /Products/Edit/5
+    [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> Edit(int id)
     {
         var product = await this.productService.GetByIdAsync(id);
@@ -116,6 +117,7 @@ public class ProductsController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Consumes("multipart/form-data")]
+    [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> Edit(int id, ProductCreateUpdateDto dto)
     {
         if (!this.ModelState.IsValid)
@@ -148,7 +150,7 @@ public class ProductsController : Controller
     }
 
     // GET: /Products/Delete/5
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> Delete(int id)
     {
         var product = await this.productService.GetByIdAsync(id);
@@ -164,7 +166,7 @@ public class ProductsController : Controller
     [HttpPost]
     [ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var deleted = await this.productService.DeleteAsync(id);
