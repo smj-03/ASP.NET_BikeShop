@@ -1,4 +1,7 @@
-﻿@model IEnumerable<BikeShop.Models.ProductDto>
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<BikeShop.Models.ProductDto>
+
 
 @{
     ViewData["Title"] = "Lista produktów";
@@ -39,3 +42,9 @@
     }
     </tbody>
 </table>
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+{
+    UlElementClasses = new[] { "pagination" },
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" }
+})

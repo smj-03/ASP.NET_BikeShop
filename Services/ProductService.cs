@@ -88,4 +88,50 @@ public class ProductService : IProductService
         var products = await query.ToListAsync();
         return products.Select(p => this.mapper.Map(p));
     }
+    public IQueryable<ProductDto> GetAllQueryable()
+    {
+        // Tu mapowanie na DTO można zrobić na poziomie Linq (projekcja)
+        return context.Products
+            .OrderBy(p => p.Name)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                ImageUrl = p.ImageUrl,
+                // inne właściwości, jeśli są
+            });
+    }
+    
+    public IQueryable<ProductDto> GetFilteredQueryable(ProductFilterDto filter)
+    {
+        var query = context.Products.AsQueryable();
+
+        if (filter.Categories != null && filter.Categories.Any())
+        {
+            query = query.Where(p => filter.Categories.Contains(p.Category));
+        }
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= filter.MinPrice.Value);
+        }
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= filter.MaxPrice.Value);
+        }
+
+        return query.OrderBy(p => p.Name)
+            .Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                ImageUrl = p.ImageUrl
+            });
+    }
+
 }

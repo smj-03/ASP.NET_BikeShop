@@ -2,6 +2,9 @@
 using BikeShop.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace BikeShop.Controllers;
 
@@ -16,10 +19,23 @@ public class ProductsController : Controller
     }
 
     // GET: /Products
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? page)
     {
-        var products = await this.productService.GetAllAsync();
-        return this.View(products);
+        int pageSize = 10;
+        int pageNumber = page ?? 1;
+        
+        var query = productService.GetAllQueryable();
+        
+        var pagedProducts = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        int totalCount = await query.CountAsync();
+
+        var pagedList = new StaticPagedList<ProductDto>(pagedProducts, pageNumber, pageSize, totalCount);
+
+        return View(pagedList);
     }
 
     // GET: /Products/Details/5
@@ -161,14 +177,27 @@ public class ProductsController : Controller
     }
 
     // GET: /Products/Filter
-    public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto)
+    public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto, int? page)
     {
-        if (!this.ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            return this.View("Index", new List<ProductDto>());
+            return View("Index", new StaticPagedList<ProductDto>(new List<ProductDto>(), 1, 10, 0));
         }
 
-        var products = await this.productService.GetFilteredAsync(filterDto);
-        return this.View("Index", products);
+        int pageSize = 10;
+        int pageNumber = page ?? 1;
+
+        var query = productService.GetFilteredQueryable(filterDto);
+
+        var productsPage = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        int totalCount = await query.CountAsync();
+
+        var pagedList = new StaticPagedList<ProductDto>(productsPage, pageNumber, pageSize, totalCount);
+
+        return View("Index", pagedList);
     }
 }

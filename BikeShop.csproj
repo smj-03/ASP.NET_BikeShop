@@ -22,8 +22,7 @@
       <PackageReference Include="Moq" Version="4.20.72" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="NUnit" Version="4.3.2" />
-      <PackageReference Include="Riok.Mapperly" Version="4.3.0-next.0" OutputItemType="Analyzer"
-                        ReferenceOutputAssembly="false"  />
+      <PackageReference Include="Riok.Mapperly" Version="4.3.0-next.0" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -31,6 +30,8 @@
       <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.4" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.4" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.4" />
+      <PackageReference Include="X.PagedList" Version="10.5.7" />
+      <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
       <PackageReference Include="xunit" Version="2.9.3" />
     </ItemGroup>
 
