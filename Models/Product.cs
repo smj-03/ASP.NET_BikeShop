@@ -19,6 +19,7 @@ public class Product
     public string Description { get; set; }
 
     [Required]
+    [StringLength(100)]
     public string Category { get; set; }
 
     [Required]
