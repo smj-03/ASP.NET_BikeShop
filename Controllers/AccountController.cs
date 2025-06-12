@@ -120,4 +120,25 @@ public class AccountController : Controller
 
         return View(pagedList);
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+        var model = new ProfileViewModel
+        {
+            UserName = user.UserName,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber
+        };
+        return View(model);
+    }
 }
+

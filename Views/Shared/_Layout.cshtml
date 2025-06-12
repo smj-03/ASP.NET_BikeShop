@@ -29,15 +29,12 @@
                     @* <li class="nav-item"> *@
                     @*     <a class="nav-link text-dark" asp-controller="OrderComments" asp-action="Add">Dodaj kometarz do zamówienia</a> *@
                     @* </li> *@
-                    @if (User.IsInRole("Client"))
+
+                    @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Order" asp-action="Index">Zamówienia</a>
                         </li>
-                    }
-
-                    @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
-                    {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Dodaj Produkt</a>
                         </li>
@@ -54,6 +51,12 @@
                     }
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="btn btn-outline-secondary me-2" asp-controller="Account" asp-action="Profile">Profil</a>
+                        </li>
+                    }
                     <li class="nav-item">
                         <a class="btn btn-outline-primary me-2" asp-controller="Basket" asp-action="Index">
                             <span class="bi bi-basket">Koszyk</span> 
