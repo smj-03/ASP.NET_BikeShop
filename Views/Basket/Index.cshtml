@@ -1,0 +1,50 @@
+@model BikeShop.Models.Basket
+
+<h2>Your Basket</h2>
+@if (!Model.Items.Any())
+{
+    <p>Your basket is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.ProductName</td>
+                <td>
+                    <form asp-action="Update" method="post" class="d-inline">
+                        <input type="hidden" name="productId" value="@item.ProductId"/>
+                        <input type="number" name="quantity" value="@item.Quantity" min="1"
+                               class="form-control d-inline-block w-auto me-2"
+                               style="width: 70px; display: inline-block;"/>
+                        <button type="submit" class="btn btn-success btn-sm">Update</button>
+                    </form>
+                </td>
+                <td>@item.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))</td>
+                <td>@((item.Price * item.Quantity).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL")))</td>
+                <td>
+                    <form asp-action="Remove" method="post" class="d-inline">
+                        <input type="hidden" name="productId" value="@item.ProductId"/>
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <form asp-action="Clear" method="post">
+        <button type="submit" class="btn btn-warning">Clear Basket</button>
+    </form>
+}
+
