@@ -21,7 +21,7 @@
     <input type="hidden" name="productName" value="@Model.Name" />
     <input type="hidden" name="price" value="@Model.Price" />
     <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control d-inline-block w-auto me-2" />
-    <button type="submit" class="btn btn-primary">Add to Basket</button>
+    <button type="submit" class="btn btn-primary">Dodaj do koszyka</button>
 </form>
 
 @if (User.IsInRole("Employee") || User.IsInRole("Admin"))

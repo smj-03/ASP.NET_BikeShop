@@ -1,19 +1,19 @@
 @model BikeShop.Models.Basket
 
-<h2>Your Basket</h2>
+<h2>Twój Koszyk</h2>
 @if (!Model.Items.Any())
 {
-    <p>Your basket is empty.</p>
+    <p>Twój koszyk jest pusty.</p>
 }
 else
 {
     <table class="table">
         <thead>
         <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
+            <th>Produkt</th>
+            <th>Ilość</th>
+            <th>Cena</th>
+            <th>Razem</th>
             <th></th>
         </tr>
         </thead>
@@ -21,22 +21,30 @@ else
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@item.ProductName</td>
                 <td>
-                    <form asp-action="Update" method="post" class="d-inline">
-                        <input type="hidden" name="productId" value="@item.ProductId"/>
-                        <input type="number" name="quantity" value="@item.Quantity" min="1"
-                               class="form-control d-inline-block w-auto me-2"
-                               style="width: 70px; display: inline-block;"/>
-                        <button type="submit" class="btn btn-success btn-sm">Update</button>
+                    <form asp-controller="Products" asp-action="Details" method="get" class="d-inline">
+                        <input type="hidden" name="id" value="@item.ProductId" />
+                        <button type="submit" class="btn btn-link text-dark p-0" style="text-decoration: none;">@item.ProductName</button>
                     </form>
+                </td>
+                <td>
+                    <input type="number" name="quantity" value="@item.Quantity" min="1"
+                           class="form-control d-inline-block w-auto me-2"
+                           style="width: 70px; display: inline-block;"
+                           form="update-form-@item.ProductId"/>
                 </td>
                 <td>@item.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))</td>
                 <td>@((item.Price * item.Quantity).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL")))</td>
                 <td>
+                    <form asp-action="Update" method="post" class="d-inline" id="update-form-@item.ProductId">
+                        <input type="hidden" name="productId" value="@item.ProductId"/>
+                        <button type="submit" class="btn btn-success btn-sm">Aktualizuj</button>
+                    </form>
+                </td>
+                <td>
                     <form asp-action="Remove" method="post" class="d-inline">
                         <input type="hidden" name="productId" value="@item.ProductId"/>
-                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Usuń</button>
                     </form>
                 </td>
             </tr>
@@ -44,7 +52,15 @@ else
         </tbody>
     </table>
     <form asp-action="Clear" method="post">
-        <button type="submit" class="btn btn-warning">Clear Basket</button>
+        <button type="submit" class="btn btn-warning">Wyczyść koszyk</button>
     </form>
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h3>Suma: <span class="text-success">
+            @Model.Items.Sum(item => item.Price * item.Quantity).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))
+        </span></h3>
+        <form>
+            <button type="button" class="btn btn-lg btn-primary">Zamów</button>
+        </form>
+    </div>
 }
 
