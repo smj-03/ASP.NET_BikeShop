@@ -13,7 +13,8 @@ public partial class OrderMapper
     [MapProperty(nameof(OrderItem.ProductId), nameof(OrderProductDetailsDto.ProductId))]
     [MapProperty(nameof(OrderItem.Product.Name), nameof(OrderProductDetailsDto.ProductName))]
     public partial OrderProductDetailsDto ToProductDetailsDto(OrderItem item);
+
     public partial OrderProductDto ToOrderProductDto(OrderItem item);
-    
+
     public partial OrderViewDto ToOrderViewDto(Order order);
 }

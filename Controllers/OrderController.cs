@@ -27,10 +27,10 @@ public class OrderController : Controller
             .Select(p => new SelectListItem
             {
                 Value = p.Id.ToString(),
-                Text = p.Name
+                Text = p.Name,
             }).ToList();
 
-        ViewBag.Products = products;
+        this.ViewBag.Products = products;
         return this.View(new CreateOrderDto());
     }
 
@@ -53,10 +53,10 @@ public class OrderController : Controller
                 .Select(p => new SelectListItem
                 {
                     Value = p.Id.ToString(),
-                    Text = p.Name
+                    Text = p.Name,
                 }).ToList();
 
-            ViewBag.Products = products;
+            this.ViewBag.Products = products;
             return this.View(dto);
         }
 
@@ -71,10 +71,10 @@ public class OrderController : Controller
                 .Select(p => new SelectListItem
                 {
                     Value = p.Id.ToString(),
-                    Text = p.Name
+                    Text = p.Name,
                 }).ToList();
 
-            ViewBag.Products = products;
+            this.ViewBag.Products = products;
             this.ModelState.AddModelError(string.Empty, ex.Message);
             return this.View(dto);
         }
@@ -147,7 +147,7 @@ public class OrderController : Controller
             return this.View(dto);
         }
     }
-    
+
     [HttpGet("")]
     public async Task<IActionResult> Index([FromQuery] OrderFilterDto filter, int page = 1, int pageSize = 10)
     {
@@ -163,13 +163,11 @@ public class OrderController : Controller
         int totalOrders = await this.orderService.GetFilteredCountAsync(filter);
         var orders = await this.orderService.GetFilteredPagedAsync(filter, page, pageSize);
 
-        ViewBag.Filter = filter;
-        ViewBag.Page = page;
-        ViewBag.PageSize = pageSize;
-        ViewBag.TotalOrders = totalOrders;
+        this.ViewBag.Filter = filter;
+        this.ViewBag.Page = page;
+        this.ViewBag.PageSize = pageSize;
+        this.ViewBag.TotalOrders = totalOrders;
 
         return this.View(orders);
     }
-
-
 }

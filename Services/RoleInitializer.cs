@@ -11,6 +11,7 @@ public class RoleInitializer : IRoleInitializer
         this.roleManager = roleManager;
     }
 
+    /// <inheritdoc/>
     public async Task EnsureRolesExistAsync()
     {
         string[] roles = { "Admin", "Employee", "Client" };

@@ -26,7 +26,7 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] ProductFilterDto filter, int page = 1, int pageSize = 2)
+    public async Task<IActionResult> Index([FromQuery] ProductFilterDto filter, int page = 1, int pageSize = 9)
     {
         var allProducts = await this.productService.GetFilteredAsync(filter);
         var totalCount = allProducts.Count();
@@ -39,9 +39,8 @@ public class HomeController : Controller
             CurrentPage = page,
             PageSize = pageSize,
             TotalPages = totalPages,
-            TotalCount = totalCount
+            TotalCount = totalCount,
         };
         return this.View(vm);
     }
 }
-

@@ -20,6 +20,7 @@ public class AccountService : IAccountService
         this.userManager = userManager;
     }
 
+    /// <inheritdoc/>
     public async Task<IdentityResult> AssignRoleAsync(string userId, string roleName)
     {
         var user = await this.userManager.FindByIdAsync(userId);
@@ -32,6 +33,7 @@ public class AccountService : IAccountService
         return await this.userManager.AddToRoleAsync(user, roleName);
     }
 
+    /// <inheritdoc/>
     public async Task<IdentityResult> RegisterAsync(RegisterViewModel model)
     {
         var user = this.userMapper.Map(model);
@@ -47,6 +49,7 @@ public class AccountService : IAccountService
         return result;
     }
 
+    /// <inheritdoc/>
     public async Task<SignInResult> LoginAsync(LoginViewModel model)
     {
         return await this.signInManager.PasswordSignInAsync(
@@ -56,16 +59,19 @@ public class AccountService : IAccountService
             lockoutOnFailure: false);
     }
 
+    /// <inheritdoc/>
     public async Task LogoutAsync()
     {
         await this.signInManager.SignOutAsync();
     }
 
+    /// <inheritdoc/>
     public List<UserDto> GetAllUsers()
     {
         return this.userManager.Users.Select(u => this.userMapper.Map(u)).ToList();
     }
 
+    /// <inheritdoc/>
     public async Task<List<UserDto>> GetAllUsersAsync()
     {
         var users = this.userManager.Users.ToList();
@@ -81,7 +87,8 @@ public class AccountService : IAccountService
 
         return userDtos;
     }
-    
+
+    /// <inheritdoc/>
     public IQueryable<UserDto> GetUsersQueryable()
     {
         return this.userManager.Users.Select(u => new UserDto

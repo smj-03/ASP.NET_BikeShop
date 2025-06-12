@@ -1,24 +1,24 @@
-using BikeShop.Models;
-using BikeShop.Services;
-using Microsoft.AspNetCore.Mvc;
-
 namespace BikeShop.Controllers
 {
+    using BikeShop.Models;
+    using BikeShop.Services;
+    using Microsoft.AspNetCore.Mvc;
+
     public class BasketController : Controller
     {
-        private readonly BasketService _basketService;
-        private readonly IOrderService _orderService;
+        private readonly BasketService basketService;
+        private readonly IOrderService orderService;
 
         public BasketController(BasketService basketService, IOrderService orderService)
         {
-            _basketService = basketService;
-            _orderService = orderService;
+            this.basketService = basketService;
+            this.orderService = orderService;
         }
 
         public IActionResult Index()
         {
-            var basket = _basketService.GetBasket();
-            return View(basket);
+            var basket = this.basketService.GetBasket();
+            return this.View(basket);
         }
 
         [HttpPost]
@@ -29,24 +29,24 @@ namespace BikeShop.Controllers
                 ProductId = productId,
                 ProductName = productName,
                 Price = price,
-                Quantity = quantity
+                Quantity = quantity,
             };
-            _basketService.AddToBasket(item);
-            return RedirectToAction("Index");
+            this.basketService.AddToBasket(item);
+            return this.RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Remove(int productId)
         {
-            _basketService.RemoveFromBasket(productId);
-            return RedirectToAction("Index");
+            this.basketService.RemoveFromBasket(productId);
+            return this.RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Clear()
         {
-            _basketService.ClearBasket();
-            return RedirectToAction("Index");
+            this.basketService.ClearBasket();
+            return this.RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -55,37 +55,38 @@ namespace BikeShop.Controllers
             if (quantity < 1)
             {
                 // Optionally, remove the item if quantity is set to less than 1
-                _basketService.RemoveFromBasket(productId);
+                this.basketService.RemoveFromBasket(productId);
             }
             else
             {
-                var basket = _basketService.GetBasket();
+                var basket = this.basketService.GetBasket();
                 var item = basket.Items.FirstOrDefault(i => i.ProductId == productId);
                 if (item != null)
                 {
                     item.Quantity = quantity;
-                    _basketService.SaveBasket(basket);
+                    this.basketService.SaveBasket(basket);
                 }
             }
-            return RedirectToAction("Index");
+
+            return this.RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> Order()
         {
-            if (!User.Identity.IsAuthenticated)
+            if (!this.User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Login", "Account");
+                return this.RedirectToAction("Login", "Account");
             }
 
-            var basket = _basketService.GetBasket();
+            var basket = this.basketService.GetBasket();
             if (basket == null || !basket.Items.Any())
             {
-                TempData["OrderError"] = "Koszyk jest pusty.";
-                return RedirectToAction("Index");
+                this.TempData["OrderError"] = "Koszyk jest pusty.";
+                return this.RedirectToAction("Index");
             }
 
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = this.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var createOrderDto = new CreateOrderDto
             {
                 CustomerId = userId,
@@ -93,13 +94,13 @@ namespace BikeShop.Controllers
                 {
                     ProductId = i.ProductId,
                     Quantity = i.Quantity
-                }).ToList()
+                }).ToList(),
             };
 
-            await _orderService.CreateAsync(createOrderDto);
-            _basketService.ClearBasket();
-            TempData["OrderSuccess"] = "Zamówienie zostało złożone!";
-            return RedirectToAction("Index", "Order");
+            await this.orderService.CreateAsync(createOrderDto);
+            this.basketService.ClearBasket();
+            this.TempData["OrderSuccess"] = "Zamówienie zostało złożone!";
+            return this.RedirectToAction("Index", "Order");
         }
     }
 }

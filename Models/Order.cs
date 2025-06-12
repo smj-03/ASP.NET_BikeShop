@@ -21,7 +21,6 @@ public class Order
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
     public List<OrderItem> Items { get; set; } = new ();
-    
+
     public ICollection<OrderComment> Comments { get; set; }
 }
-

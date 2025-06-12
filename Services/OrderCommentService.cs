@@ -6,29 +6,31 @@ namespace BikeShop.Services;
 
 public class OrderCommentService : IOrderCommentService
 {
-    private readonly AppDbContext _context;
-    private readonly OrderCommentMapper _mapper;
+    private readonly AppDbContext context;
+    private readonly OrderCommentMapper mapper;
 
     public OrderCommentService(AppDbContext context, OrderCommentMapper mapper)
     {
-        _context = context;
-        _mapper = mapper;
+        this.context = context;
+        this.mapper = mapper;
     }
 
+    /// <inheritdoc/>
     public async Task AddCommentAsync(int orderId, CreateOrderCommentDto createDto, string userId)
     {
-        var entity = _mapper.ToEntity(createDto);
+        var entity = this.mapper.ToEntity(createDto);
         entity.OrderId = orderId;
         entity.CreatedByUserId = userId;
         entity.CreatedAt = DateTime.UtcNow;
 
-        _context.OrderComments.Add(entity);
-        await _context.SaveChangesAsync();
+        this.context.OrderComments.Add(entity);
+        await this.context.SaveChangesAsync();
     }
 
+    /// <inheritdoc/>
     public async Task<List<OrderCommentDto>> GetCommentsForOrderAsync(int orderId)
     {
-        var comments = await _context.OrderComments
+        var comments = await this.context.OrderComments
             .Where(c => c.OrderId == orderId)
             .Include(c => c.CreatedByUser)
             .OrderBy(c => c.CreatedAt)
@@ -36,7 +38,7 @@ public class OrderCommentService : IOrderCommentService
 
         return comments.Select(c =>
         {
-            var dto = _mapper.ToDto(c);
+            var dto = this.mapper.ToDto(c);
             dto.CreatedByUserName = c.CreatedByUser?.UserName ?? "Nieznany";
             return dto;
         }).ToList();
