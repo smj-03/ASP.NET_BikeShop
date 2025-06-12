@@ -145,7 +145,9 @@ public class OrderService : IOrderService
             Items = o.Items.Select(i => new OrderProductDto
             {
                 ProductId = i.ProductId,
-                Quantity = i.Quantity
+                Quantity = i.Quantity,
+                Price = i.Product?.Price ?? 0m
+                
             }).ToList()
         }).ToList();
     }
