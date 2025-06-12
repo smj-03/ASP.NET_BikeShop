@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BikeShop.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin,Employee")]
 [Route("[controller]")]
 public class UsersSearchController : Controller
 {

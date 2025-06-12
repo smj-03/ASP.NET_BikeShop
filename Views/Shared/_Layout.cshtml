@@ -23,33 +23,62 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Strona główna</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Produkty</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Order" asp-action="Create">Nowe zamówienie</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Order" asp-action="Index">Zamówienia</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="OrderComments" asp-action="Add">Dodaj kometarz do zamówienia</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Account" asp-action="ListUsers">Użytkownicy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="UsersSearch" asp-action="Search">Wyszukaj użytkownika</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Admin" asp-action="ManageRoles">Zarządzaj rolami</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Logowanie</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Rejestracja</a>
-                    </li>
+                    @* <li class="nav-item"> *@
+                        @*     <a class="nav-link text-dark" asp-controller="Order" asp-action="Create">Nowe zamówienie</a> *@
+                    @* </li> *@
+                    @* <li class="nav-item"> *@
+                    @*     <a class="nav-link text-dark" asp-controller="OrderComments" asp-action="Add">Dodaj kometarz do zamówienia</a> *@
+                    @* </li> *@
+                    @if (User.IsInRole("Client"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Order" asp-action="Index">Zamówienia</a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Products" asp-action="Index">Dodaj Produkt</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="UsersSearch" asp-action="Search">Wyszukaj użytkownika</a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="ManageRoles">Zarządzaj rolami</a>
+                        </li>
+                    }
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button class="btn btn-primary ms-2" type="submit">Logout</button>
+                            </form>
+                        </li>
+
+
+                        // TODO: ACCOUNT VIEW 
+                        @* <li class="nav-item"> *@
+                        @*     <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">Profile</a> *@
+                        @* </li> *@
+                        @* <li class="nav-item"> *@
+                        @*     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline"> *@
+                        @*         <button type="submit" class="nav-link btn btn-link text-dark" style="display:inline; padding:0;">Logout</button> *@
+                        @*     </form> *@
+                        @* </li> *@
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-2" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

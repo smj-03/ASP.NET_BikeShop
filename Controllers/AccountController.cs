@@ -77,6 +77,15 @@ public class AccountController : Controller
         return this.View(model);
     }
     
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await this.accountService.LogoutAsync();
+        return RedirectToAction("Index", "Home");
+    }
+    
     [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> ListUsers(int? page)
     {

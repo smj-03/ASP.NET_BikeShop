@@ -40,13 +40,15 @@
     @foreach (var product in Model.Products)
     {
         <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="@product.ImageUrl" alt="Zdjęcie produktu" class="card-img-top img-fluid" />
-                <div class="card-body">
-                    <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text">Cena: @product.Price zł</p>
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" style="text-decoration: none; color: inherit;">
+                <div class="card mb-4 shadow-sm">
+                    <img src="@product.ImageUrl" alt="Zdjęcie produktu" class="card-img-top img-fluid" />
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">Cena: @product.Price zł</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     }
 </div>
