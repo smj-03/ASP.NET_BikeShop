@@ -45,10 +45,27 @@
                     <img src="@product.ImageUrl" alt="Zdjęcie produktu" class="card-img-top img-fluid" />
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">Cena: @product.Price zł</p>
+                        <p class="card-text">Cena: @product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))</p>
                     </div>
                 </div>
             </a>
         </div>
     }
 </div>
+
+<nav aria-label="Paginacja produktów">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, MinPrice = Model.Filter.MinPrice, MaxPrice = Model.Filter.MaxPrice, Categories = Model.Filter.Categories })"><</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = Model.PageSize, MinPrice = Model.Filter.MinPrice, MaxPrice = Model.Filter.MaxPrice, Categories = Model.Filter.Categories })">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, MinPrice = Model.Filter.MinPrice, MaxPrice = Model.Filter.MaxPrice, Categories = Model.Filter.Categories })">></a>
+        </li>
+    </ul>
+</nav>
