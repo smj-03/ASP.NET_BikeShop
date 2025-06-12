@@ -7,10 +7,12 @@ namespace BikeShop.Controllers
     public class BasketController : Controller
     {
         private readonly BasketService _basketService;
+        private readonly IOrderService _orderService;
 
-        public BasketController(BasketService basketService)
+        public BasketController(BasketService basketService, IOrderService orderService)
         {
             _basketService = basketService;
+            _orderService = orderService;
         }
 
         public IActionResult Index()
@@ -66,6 +68,38 @@ namespace BikeShop.Controllers
                 }
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Order()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var basket = _basketService.GetBasket();
+            if (basket == null || !basket.Items.Any())
+            {
+                TempData["OrderError"] = "Koszyk jest pusty.";
+                return RedirectToAction("Index");
+            }
+
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var createOrderDto = new CreateOrderDto
+            {
+                CustomerId = userId,
+                Products = basket.Items.Select(i => new OrderProductDto()
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
+
+            await _orderService.CreateAsync(createOrderDto);
+            _basketService.ClearBasket();
+            TempData["OrderSuccess"] = "Zamówienie zostało złożone!";
+            return RedirectToAction("Index", "Order");
         }
     }
 }

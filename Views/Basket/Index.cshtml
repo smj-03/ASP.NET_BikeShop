@@ -58,8 +58,8 @@ else
         <h3>Suma: <span class="text-success">
             @Model.Items.Sum(item => item.Price * item.Quantity).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))
         </span></h3>
-        <form>
-            <button type="button" class="btn btn-lg btn-primary">Zamów</button>
+        <form asp-action="Order" method="post">
+            <button type="submit" class="btn btn-lg btn-primary">Zamów</button>
         </form>
     </div>
 }

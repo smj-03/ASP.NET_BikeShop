@@ -8,7 +8,7 @@ public class Order
     public int Id { get; set; }
 
     [Required]
-    public string CustomerId { get; set; }
+    public string? CustomerId { get; set; }
 
     public ApplicationUser Customer { get; set; }
 
@@ -24,3 +24,4 @@ public class Order
     
     public ICollection<OrderComment> Comments { get; set; }
 }
+
