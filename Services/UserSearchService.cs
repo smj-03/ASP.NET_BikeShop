@@ -14,6 +14,7 @@ public class UserSearchService : IUserSearchService
         this.userManager = userManager;
     }
 
+    /// <inheritdoc/>
     public async Task<List<UserDto>> SearchUsersAsync(UserSearchDto searchDto, ClaimsPrincipal requester)
     {
         var requesterUser = await this.userManager.GetUserAsync(requester);

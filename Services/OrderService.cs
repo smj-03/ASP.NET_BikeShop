@@ -17,6 +17,7 @@ public class OrderService : IOrderService
         this.mapper = mapper;
     }
 
+    /// <inheritdoc/>
     public async Task<OrderDetailsDto> CreateAsync(CreateOrderDto dto)
     {
         var order = new Order
@@ -25,7 +26,7 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow,
             Status = OrderStatus.Pending,
             Items = new List<OrderItem>(),
-            Comments = new List<OrderComment>()
+            Comments = new List<OrderComment>(),
         };
 
         foreach (var productDto in dto.Products)
@@ -55,17 +56,19 @@ public class OrderService : IOrderService
         return this.mapper.ToOrderDetailsDto(order);
     }
 
+    /// <inheritdoc/>
     public async Task<OrderDetailsDto?> GetByIdAsync(int id)
     {
         var order = await this.context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
-            .Include(o => o.Comments)        // dołącz komentarze zamówienia
+            .Include(o => o.Comments) // dołącz komentarze zamówienia
             .FirstOrDefaultAsync(o => o.Id == id);
 
         return order == null ? null : this.mapper.ToOrderDetailsDto(order);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> UpdateStatusAsync(int id, OrderStatusUpdateDto dto)
     {
         var order = await this.context.Orders.FindAsync(id);
@@ -88,14 +91,16 @@ public class OrderService : IOrderService
         await this.context.SaveChangesAsync();
         return true;
     }
-    
+
+    /// <inheritdoc/>
     public async Task<List<Order>> GetAllAsync()
     {
-        return await context.Orders
+        return await this.context.Orders
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
-    
+
+    /// <inheritdoc/>
     public async Task<List<OrderViewDto>> GetPagedWithDetailsAsync(int page, int pageSize)
     {
         var orders = await this.context.Orders
@@ -110,25 +115,34 @@ public class OrderService : IOrderService
         return orders.Select(this.mapper.ToOrderViewDto).ToList();
     }
 
+    /// <inheritdoc/>
     public async Task<List<OrderViewDto>> GetFilteredPagedAsync(OrderFilterDto filter, int page, int pageSize)
     {
-        var query = context.Orders
+        var query = this.context.Orders
             .Include(o => o.Items).ThenInclude(i => i.Product)
             .Include(o => o.Comments)
             .Include(o => o.Customer)
             .AsQueryable();
 
         if (filter.Status != null)
+        {
             query = query.Where(o => o.Status == filter.Status);
+        }
 
         if (filter.FromDate != null)
+        {
             query = query.Where(o => o.CreatedAt >= filter.FromDate);
+        }
 
         if (filter.ToDate != null)
+        {
             query = query.Where(o => o.CreatedAt <= filter.ToDate);
+        }
 
         if (!string.IsNullOrWhiteSpace(filter.CustomerId))
+        {
             query = query.Where(o => o.CustomerId == filter.CustomerId);
+        }
 
         var orders = await query
             .OrderByDescending(o => o.CreatedAt)
@@ -147,28 +161,35 @@ public class OrderService : IOrderService
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
                 Price = i.Product?.Price ?? 0m
-                
-            }).ToList()
+            }).ToList(),
         }).ToList();
     }
 
+    /// <inheritdoc/>
     public async Task<int> GetFilteredCountAsync(OrderFilterDto filter)
     {
-        var query = context.Orders.AsQueryable();
+        var query = this.context.Orders.AsQueryable();
 
         if (filter.Status != null)
+        {
             query = query.Where(o => o.Status == filter.Status);
+        }
 
         if (filter.FromDate != null)
+        {
             query = query.Where(o => o.CreatedAt >= filter.FromDate);
+        }
 
         if (filter.ToDate != null)
+        {
             query = query.Where(o => o.CreatedAt <= filter.ToDate);
+        }
 
         if (!string.IsNullOrWhiteSpace(filter.CustomerId))
+        {
             query = query.Where(o => o.CustomerId == filter.CustomerId);
+        }
 
         return await query.CountAsync();
     }
-
 }

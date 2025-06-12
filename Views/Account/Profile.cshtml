@@ -1,0 +1,32 @@
+@model BikeShop.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profil użytkownika";
+}
+
+<h2>Profil użytkownika</h2>
+
+<table class="table table-bordered w-auto">
+    <tr>
+        <th>Nazwa użytkownika</th>
+        <td>@Model.UserName</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Imię</th>
+        <td>@Model.FirstName</td>
+    </tr>
+    <tr>
+        <th>Nazwisko</th>
+        <td>@Model.LastName</td>
+    </tr>
+    <tr>
+        <th>Telefon</th>
+        <td>@Model.PhoneNumber</td>
+    </tr>
+</table>
+
+<a class="btn btn-primary mt-3" asp-controller="Order" asp-action="Index">Moje zamówienia</a>

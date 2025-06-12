@@ -22,9 +22,9 @@ public class ProductsController : Controller
     {
         int pageSize = 10;
         int pageNumber = page ?? 1;
-        
-        var query = productService.GetAllQueryable();
-        
+
+        var query = this.productService.GetAllQueryable();
+
         var pagedProducts = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -34,7 +34,7 @@ public class ProductsController : Controller
 
         var pagedList = new StaticPagedList<ProductDto>(pagedProducts, pageNumber, pageSize, totalCount);
 
-        return View(pagedList);
+        return this.View(pagedList);
     }
 
     // GET: /Products/Details/5
@@ -181,15 +181,15 @@ public class ProductsController : Controller
     // GET: /Products/Filter
     public async Task<IActionResult> Filter([FromQuery] ProductFilterDto filterDto, int? page)
     {
-        if (!ModelState.IsValid)
+        if (!this.ModelState.IsValid)
         {
-            return View("Index", new StaticPagedList<ProductDto>(new List<ProductDto>(), 1, 10, 0));
+            return this.View("Index", new StaticPagedList<ProductDto>(new List<ProductDto>(), 1, 10, 0));
         }
 
         int pageSize = 10;
         int pageNumber = page ?? 1;
 
-        var query = productService.GetFilteredQueryable(filterDto);
+        var query = this.productService.GetFilteredQueryable(filterDto);
 
         var productsPage = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -200,6 +200,6 @@ public class ProductsController : Controller
 
         var pagedList = new StaticPagedList<ProductDto>(productsPage, pageNumber, pageSize, totalCount);
 
-        return View("Index", pagedList);
+        return this.View("Index", pagedList);
     }
 }

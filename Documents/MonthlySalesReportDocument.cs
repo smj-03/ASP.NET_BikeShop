@@ -1,24 +1,24 @@
 ﻿using BikeShop.Models;
-using QuestPDF.Helpers;
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 using QuestPDF;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace BikeShop.Documents;
 
 public class MonthlySalesReportDocument
 {
-    private readonly List<SalesReportDto> _data;
+    private readonly List<SalesReportDto> data;
 
     public MonthlySalesReportDocument(List<SalesReportDto> data)
     {
-        _data = data;
+        this.data = data;
     }
 
     public byte[] GeneratePdf()
     {
         QuestPDF.Settings.License = LicenseType.Community;
-        
+
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -30,7 +30,7 @@ public class MonthlySalesReportDocument
                     {
                         column.Item().Text("Raport sprzedaży").FontSize(20).Bold().Underline();
 
-                        foreach (var order in _data)
+                        foreach (var order in this.data)
                         {
                             column.Item().Text($"Data zamówienia: {order.OrderDate:d}, Klient: {order.CustomerName}").Bold();
 
@@ -50,4 +50,4 @@ public class MonthlySalesReportDocument
         document.GeneratePdf(ms);
         return ms.ToArray();
     }
-} 
+}

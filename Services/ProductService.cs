@@ -15,12 +15,14 @@ public class ProductService : IProductService
         this.mapper = mapper;
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<ProductDto>> GetAllAsync()
     {
         var products = await this.context.Products.ToListAsync();
         return products.Select(p => this.mapper.Map(p));
     }
 
+    /// <inheritdoc/>
     public async Task<ProductDto?> GetByIdAsync(int id)
     {
         var product = await this.context.Products.FindAsync(id);
@@ -32,6 +34,7 @@ public class ProductService : IProductService
         return this.mapper.Map(product);
     }
 
+    /// <inheritdoc/>
     public async Task<ProductDto> CreateAsync(ProductCreateUpdateDto dto)
     {
         var product = this.mapper.Map(dto);
@@ -40,6 +43,7 @@ public class ProductService : IProductService
         return this.mapper.Map(product);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> UpdateAsync(int id, ProductCreateUpdateDto dto)
     {
         var existingProduct = await this.context.Products.FindAsync(id);
@@ -53,6 +57,7 @@ public class ProductService : IProductService
         return true;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> DeleteAsync(int id)
     {
         var product = await this.context.Products.FindAsync(id);
@@ -66,6 +71,7 @@ public class ProductService : IProductService
         return true;
     }
 
+    /// <inheritdoc/>
     public async Task<IEnumerable<ProductDto>> GetFilteredAsync(ProductFilterDto filter)
     {
         var query = this.context.Products.AsQueryable();
@@ -88,10 +94,12 @@ public class ProductService : IProductService
         var products = await query.ToListAsync();
         return products.Select(p => this.mapper.Map(p));
     }
+
+    /// <inheritdoc/>
     public IQueryable<ProductDto> GetAllQueryable()
     {
         // Tu mapowanie na DTO można zrobić na poziomie Linq (projekcja)
-        return context.Products
+        return this.context.Products
             .OrderBy(p => p.Name)
             .Select(p => new ProductDto
             {
@@ -100,13 +108,15 @@ public class ProductService : IProductService
                 Description = p.Description,
                 Price = p.Price,
                 ImageUrl = p.ImageUrl,
+
                 // inne właściwości, jeśli są
             });
     }
-    
+
+    /// <inheritdoc/>
     public IQueryable<ProductDto> GetFilteredQueryable(ProductFilterDto filter)
     {
-        var query = context.Products.AsQueryable();
+        var query = this.context.Products.AsQueryable();
 
         if (filter.Categories != null && filter.Categories.Any())
         {
@@ -130,8 +140,7 @@ public class ProductService : IProductService
                 Name = p.Name,
                 Description = p.Description,
                 Price = p.Price,
-                ImageUrl = p.ImageUrl
+                ImageUrl = p.ImageUrl,
             });
     }
-
 }

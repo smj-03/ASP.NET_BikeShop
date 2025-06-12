@@ -10,37 +10,37 @@ namespace BikeShop.Controllers;
 [Authorize(Roles = "Admin,Employee")]
 public class OrderCommentsController : Controller
 {
-    private readonly IOrderCommentService _commentService;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IOrderService _orderService;
+    private readonly IOrderCommentService commentService;
+    private readonly UserManager<ApplicationUser> userManager;
+    private readonly IOrderService orderService;
 
     public OrderCommentsController(IOrderCommentService commentService, UserManager<ApplicationUser> userManager, IOrderService orderService)
     {
-        _commentService = commentService;
-        _userManager = userManager;
-        _orderService = orderService;
+        this.commentService = commentService;
+        this.userManager = userManager;
+        this.orderService = orderService;
     }
 
     // Pobierz komentarze dla zamówienia
     [HttpGet]
     public async Task<IActionResult> List(int orderId)
     {
-        var comments = await _commentService.GetCommentsForOrderAsync(orderId);
-        return View(comments); // lub Json(comments) jeśli API
+        var comments = await this.commentService.GetCommentsForOrderAsync(orderId);
+        return this.View(comments); // lub Json(comments) jeśli API
     }
 
     // Wyświetl formularz dodawania komentarza
     [HttpGet]
     public async Task<IActionResult> Add()
     {
-        var orders = await _orderService.GetAllAsync();
-        ViewBag.Orders = orders.Select(o => new SelectListItem
+        var orders = await this.orderService.GetAllAsync();
+        this.ViewBag.Orders = orders.Select(o => new SelectListItem
         {
             Value = o.Id.ToString(),
-            Text = $"#{o.Id} - {o.CreatedAt:yyyy-MM-dd}"
+            Text = $"#{o.Id} - {o.CreatedAt:yyyy-MM-dd}",
         }).ToList();
 
-        return View(new CreateOrderCommentDto());
+        return this.View(new CreateOrderCommentDto());
     }
 
     // Dodaj komentarz do zamówienia
@@ -48,22 +48,22 @@ public class OrderCommentsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Add(CreateOrderCommentDto createDto)
     {
-        if (!ModelState.IsValid)
+        if (!this.ModelState.IsValid)
         {
             // Przy ponownym wyświetlaniu widoku potrzebna jest lista zamówień
-            var orders = await _orderService.GetAllAsync();
-            ViewBag.Orders = orders.Select(o => new SelectListItem
+            var orders = await this.orderService.GetAllAsync();
+            this.ViewBag.Orders = orders.Select(o => new SelectListItem
             {
                 Value = o.Id.ToString(),
-                Text = $"#{o.Id} - {o.CreatedAt:yyyy-MM-dd}"
+                Text = $"#{o.Id} - {o.CreatedAt:yyyy-MM-dd}",
             }).ToList();
 
-            return View(createDto);
+            return this.View(createDto);
         }
 
-        var userId = _userManager.GetUserId(User);
-        await _commentService.AddCommentAsync(createDto.OrderId, createDto, userId);
+        var userId = this.userManager.GetUserId(this.User);
+        await this.commentService.AddCommentAsync(createDto.OrderId, createDto, userId);
 
-        return RedirectToAction("Details", "Orders", new { id = createDto.OrderId });
+        return this.RedirectToAction("Details", "Orders", new { id = createDto.OrderId });
     }
 }

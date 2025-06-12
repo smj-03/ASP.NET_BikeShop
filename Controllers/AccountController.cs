@@ -76,16 +76,16 @@ public class AccountController : Controller
 
         return this.View(model);
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize]
     public async Task<IActionResult> Logout()
     {
         await this.accountService.LogoutAsync();
-        return RedirectToAction("Index", "Home");
+        return this.RedirectToAction("Index", "Home");
     }
-    
+
     [Authorize(Roles = "Admin,Employee")]
     public async Task<IActionResult> ListUsers(int? page)
     {
@@ -97,7 +97,7 @@ public class AccountController : Controller
             u.Email,
             u.FirstName,
             u.LastName,
-            u.PhoneNumber
+            u.PhoneNumber,
         });
 
         int totalCount = await query.CountAsync();
@@ -113,11 +113,32 @@ public class AccountController : Controller
             Email = u.Email,
             FirstName = u.FirstName,
             LastName = u.LastName,
-            PhoneNumber = u.PhoneNumber
+            PhoneNumber = u.PhoneNumber,
         }).ToList();
 
         var pagedList = new X.PagedList.StaticPagedList<UserDto>(userDtos, pageNumber, pageSize, totalCount);
 
-        return View(pagedList);
+        return this.View(pagedList);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var user = await this.userManager.GetUserAsync(this.User);
+        if (user == null)
+        {
+            return this.RedirectToAction("Login");
+        }
+
+        var model = new ProfileViewModel
+        {
+            UserName = user.UserName,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+        };
+        return this.View(model);
     }
 }

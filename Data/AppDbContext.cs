@@ -17,11 +17,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Order> Orders { get; set; }
 
     public DbSet<OrderItem> OrderItems { get; set; }
-    
+
     public DbSet<OrderComment> OrderComments { get; set; }
 
     public DbSet<Bike> Bikes { get; set; }
-    
+
+    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -39,6 +40,5 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .WithMany() // jeśli nie masz kolekcji komentarzy w ApplicationUser
             .HasForeignKey(oc => oc.CreatedByUserId)
             .OnDelete(DeleteBehavior.Cascade); // lub Restrict jeśli wolisz
-
     }
 }

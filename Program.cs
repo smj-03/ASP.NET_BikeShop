@@ -45,6 +45,35 @@ using (var scope = app.Services.CreateScope())
 {
     var initializer = scope.ServiceProvider.GetRequiredService<IRoleInitializer>();
     await initializer.EnsureRolesExistAsync();
+
+    // Create default admin user if not exists
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var adminEmail = "admin@mail.com";
+    var adminPassword = "Admin!123";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true,
+            FirstName = "Admin",
+            LastName = "Admin",
+            PhoneNumber = "1234567890",
+        };
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+        if (result.Succeeded)
+        {
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -71,4 +100,3 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
-

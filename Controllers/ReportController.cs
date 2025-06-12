@@ -8,11 +8,11 @@ namespace BikeShop.Controllers;
 [Authorize(Roles = "Admin")]
 public class ReportsController : Controller
 {
-    private readonly IReportService _reportService;
+    private readonly IReportService reportService;
 
     public ReportsController(IReportService reportService)
     {
-        _reportService = reportService;
+        this.reportService = reportService;
     }
 
     [HttpPost]
@@ -22,10 +22,10 @@ public class ReportsController : Controller
         var startDate = new DateTime(year, month, 1);
         var endDate = startDate.AddMonths(1).AddTicks(-1); // ostatnia chwila miesiąca
 
-        var reportData = await _reportService.GetSalesReport(startDate, endDate);
-        var pdfBytes = _reportService.GenerateSalesReportPdf(reportData);
+        var reportData = await this.reportService.GetSalesReport(startDate, endDate);
+        var pdfBytes = this.reportService.GenerateSalesReportPdf(reportData);
 
         var fileName = $"SalesReport_{year}_{month:D2}.pdf";
-        return File(pdfBytes, "application/pdf", fileName);
+        return this.File(pdfBytes, "application/pdf", fileName);
     }
 }
