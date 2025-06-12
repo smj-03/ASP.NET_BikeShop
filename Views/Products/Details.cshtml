@@ -12,8 +12,17 @@
 
 <div>
     <p><strong>Opis:</strong> @Model.Description</p>
-    <p><strong>Cena:</strong> @Model.Price.ToString("C")</p>
+    <p><strong>Cena:</strong> @Model.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pl-PL"))</p>
+    <p><strong>Dostępna ilość:</strong> @Model.StockQuantity</p>
 </div>
+
+<form asp-controller="Basket" asp-action="Add" method="post" class="mb-3">
+    <input type="hidden" name="productId" value="@Model.Id" />
+    <input type="hidden" name="productName" value="@Model.Name" />
+    <input type="hidden" name="price" value="@Model.Price" />
+    <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control d-inline-block w-auto me-2" />
+    <button type="submit" class="btn btn-primary">Dodaj do koszyka</button>
+</form>
 
 @if (User.IsInRole("Employee") || User.IsInRole("Admin"))
 {

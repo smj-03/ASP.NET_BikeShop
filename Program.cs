@@ -34,6 +34,10 @@ builder.Services.AddScoped<ProductMapper>();
 builder.Services.AddScoped<OrderMapper>();
 builder.Services.AddScoped<OrderCommentMapper>();
 
+builder.Services.AddScoped<BasketService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -57,6 +61,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
+app.UseSession();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
@@ -65,3 +70,4 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
+
