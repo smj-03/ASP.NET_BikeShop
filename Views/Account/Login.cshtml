@@ -1,17 +1,25 @@
 ﻿@model BikeShop.Models.LoginViewModel
 
-<h2>Logowanie</h2>
-<form asp-action="Login" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-    </div>
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-6 col-lg-4">
+            <h2 class="text-center">Logowanie</h2>
+            <form asp-action="Login" method="post">
+                <div class="form-group mb-3">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
 
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" class="form-control" />
+                <div class="form-group mb-3">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                </div>
+                <hr />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Register" asp-controller="Account" class="btn btn-secondary">Zarejestruj się</a>
+                    <button type="submit" class="btn btn-primary">Zaloguj</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <hr />
-    <a asp-action="Register" asp-controller="Account" class="btn btn-secondary">Zarejestruj się</a>
-    <button type="submit" class="btn btn-primary">Zaloguj</button>
-</form>
+</div>
