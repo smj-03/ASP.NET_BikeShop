@@ -39,6 +39,8 @@ builder.Services.AddScoped<BasketService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 
+builder.Services.AddHostedService<OrderReportBackgroundService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
