@@ -53,10 +53,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\images\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Shered\_ValidationScriptsPartial.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Orders\Create.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\Orders\Delete.cshtml" />

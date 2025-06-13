@@ -54,11 +54,14 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
-                            <a class="btn btn-outline-secondary me-2" asp-controller="Account" asp-action="Profile">Profil</a>
+                            <a class="btn btn-outline-secondary me-2" asp-controller="Account" asp-action="Profile">
+                                <img src="~/images/user.png" alt="Profile" style="height: 20px; width: auto; margin-right: 5px;" />Profil
+                            </a>
                         </li>
                     }
                     <li class="nav-item">
                         <a class="btn btn-outline-primary me-2" asp-controller="Basket" asp-action="Index">
+                            <img src="~/images/grocery-store.png" alt="Basket" style="height: 20px; width: auto; margin-right: 5px;" />
                             <span class="bi bi-basket">Koszyk</span> 
                         </a>
                     </li>
