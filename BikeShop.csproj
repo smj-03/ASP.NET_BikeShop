@@ -33,6 +33,7 @@
       <PackageReference Include="NBomber" Version="6.0.2" />
       <PackageReference Include="NBomber.Http" Version="6.0.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="NLog.Web.AspNetCore" Version="5.5.0" />
       <PackageReference Include="NUnit" Version="4.3.2" />
       <PackageReference Include="QuestPDF" Version="2025.5.1" />
       <PackageReference Include="Riok.Mapperly" Version="4.3.0-next.0" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
