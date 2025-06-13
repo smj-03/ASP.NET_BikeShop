@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+@{
+    ViewData["Title"] = "Raport miesięczny sprzedaży";
+    var allErrors = ViewData["AllErrors"] as List<string> ?? new List<string>();
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="MonthlySalesPdf" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div class="col-md-6">
+        <label for="year" class="form-label">Rok</label>
+        <input type="number" name="year" class="form-control" value="@DateTime.Now.Year" required />
+    </div>
+
+    <div class="col-md-6">
+        <label for="month" class="form-label">Miesiąc</label>
+        <input type="number" name="month" class="form-control" value="@DateTime.Now.Month" min="1" max="12" required />
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Pobierz raport PDF</button>
+    </div>
+
+    @if (allErrors.Any())
+    {
+        <div class="alert alert-danger mt-3">
+            @foreach (var error in allErrors)
+            {
+                <div>@error</div>
+            }
+        </div>
+    }
+</form>
