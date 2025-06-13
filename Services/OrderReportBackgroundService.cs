@@ -8,7 +8,7 @@ public class OrderReportBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<OrderReportBackgroundService> _logger;
-    private readonly string _adminEmail = "chwastekszymon@gmail.com"; // Change to real admin email
+// (Line removed)
     private readonly string _pdfPath = "open_orders.pdf";
 
     public OrderReportBackgroundService(IServiceProvider serviceProvider, ILogger<OrderReportBackgroundService> logger)
