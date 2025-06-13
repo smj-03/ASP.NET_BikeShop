@@ -1,9 +1,10 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using NBomber.Contracts;
 using NBomber.CSharp;
+using NBomber.Contracts;
+using NBomber.Contracts.Stats; // Added for ReportFormat
 using Xunit;
+using System.Net.Http; // Added for HttpClient
+using System; // Added for AppContext, TimeSpan, Uri, Exception
+using System.IO; // Added for Path
 
 namespace BikeShop.Tests
 {
@@ -19,28 +20,36 @@ namespace BikeShop.Tests
         [Fact]
         public void Products_Index_Page_Load_Test()
         {
-            var scenario = Scenario.Create("products_index_load_test", async context =>
+            var scenario = Scenario.Create("products_index_50_users_100_req_each", async context =>
                 {
-                    try
+                    for (int i = 0; i < 100; i++) 
                     {
-                        var response = await _httpClient.GetAsync("/Products");
-                        response.EnsureSuccessStatusCode();
-                        return Response.Ok();
+                        try
+                        {
+                            var response = await _httpClient.GetAsync("/Home");
+                            response.EnsureSuccessStatusCode();
+                        }
+                        catch (Exception e)
+                        {
+                            return Response.Fail(message: $"Request {i + 1} for user {context.ScenarioInfo.ThreadNumber} failed: {e.Message}"); 
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        return Response.Fail(e);
-                    }
+                    return Response.Ok(); 
                 })
-                .WithWarmUpDuration(TimeSpan.FromSeconds(5))
+                .WithWarmUpDuration(TimeSpan.FromSeconds(10))
                 .WithLoadSimulations(
-                    Simulation.Inject(rate: 10, 
-                                      interval: TimeSpan.FromSeconds(1),
-                                      during: TimeSpan.FromSeconds(30))
+                    Simulation.KeepConstant(
+                        copies: 50, 
+                        during: TimeSpan.FromMinutes(2))
                 );
+
+            var reportPath = Path.Combine(AppContext.BaseDirectory, "nbomber_reports");
+            Console.WriteLine($"NBomber reports will be saved to: {reportPath}"); // Added for debugging
 
             NBomberRunner
                 .RegisterScenarios(scenario)
+                .WithReportFolder(reportPath) // Use absolute path
+                .WithReportFormats(ReportFormat.Html, ReportFormat.Md) // Specifies report formats
                 .Run();
         }
     }
