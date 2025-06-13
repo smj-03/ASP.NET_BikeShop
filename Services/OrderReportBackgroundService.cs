@@ -81,18 +81,20 @@ public class OrderReportBackgroundService : BackgroundService
 
         await File.WriteAllBytesAsync(_pdfPath, pdfBytes);
         
-        await SendEmailWithAttachmentAsync("chwastekszymon@gmail.com", "Order", "Attached is the report of open orders.", _pdfPath);
+        await SendEmailWithAttachmentAsync("pawelbuczek48@gmail.com", "Order", "Attached is the report of open orders.", _pdfPath);
     }
 
     private async Task SendEmailWithAttachmentAsync(string to, string subject, string body, string attachmentPath)
     {
-        var message = new MailMessage("important@interia.com", to, subject, body);
-        message.Attachments.Add(new Attachment(attachmentPath));
+        using var message = new MailMessage("szymon.buczek@interia.eu", to, subject, body);
+        await using var fileStream = new FileStream(attachmentPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var attachment = new Attachment(fileStream, Path.GetFileName(attachmentPath));
+        message.Attachments.Add(attachment);
 
         using (var client = new SmtpClient("poczta.interia.pl")
                {
                    Port = 587,
-                   Credentials = new NetworkCredential("important@interia.com", "canon1"),
+                   Credentials = new NetworkCredential("szymon.buczek@interia.eu", "Origin200!@#"),
                    EnableSsl = true
                })
         {
@@ -101,3 +103,4 @@ public class OrderReportBackgroundService : BackgroundService
         }
     }
 }
+
