@@ -86,8 +86,10 @@ public class OrderReportBackgroundService : BackgroundService
 
     private async Task SendEmailWithAttachmentAsync(string to, string subject, string body, string attachmentPath)
     {
-        var message = new MailMessage("important@interia.com", to, subject, body);
-        message.Attachments.Add(new Attachment(attachmentPath));
+        using var message = new MailMessage("important@interia.com", to, subject, body);
+        await using var fileStream = new FileStream(attachmentPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var attachment = new Attachment(fileStream, Path.GetFileName(attachmentPath));
+        message.Attachments.Add(attachment);
 
         using (var client = new SmtpClient("poczta.interia.pl")
                {
@@ -101,3 +103,4 @@ public class OrderReportBackgroundService : BackgroundService
         }
     }
 }
+
